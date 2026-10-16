@@ -1,0 +1,2119 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>雅思聽力聽寫測驗</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Atkinson+Hyperlegible+Mono:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap">
+<style>
+/* Layout: one phone-width column, answer-sheet feel — numbered boxes, graphite ink on cool paper, exam-print red for marks. */
+:root{
+  --paper:#F3F5F8; --card:#FFFFFF; --ink:#1A1F2B; --muted:#5B6472; --rule:#D3D8E0;
+  --mark:#C4302B; --mark-ink:#FFFFFF; --mark-soft:#F8E4E2;
+  --ok:#1F7A4A; --ok-bg:#E1F3E8; --bad:#B3261E; --bad-bg:#FBE6E4;
+  --focus:#2B5CD6; --shadow:0 1px 2px rgba(20,30,50,.06),0 6px 18px rgba(20,30,50,.06);
+  --font-ui:"Atkinson Hyperlegible","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-mono:"Atkinson Hyperlegible Mono",ui-monospace,"SF Mono",Menlo,Consolas,"Noto Sans TC",monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#12151A; --card:#1B1F26; --ink:#E8EBF0; --muted:#98A2B0; --rule:#2E343D;
+    --mark:#FF6E63; --mark-ink:#1A0D0C; --mark-soft:#3A2321;
+    --ok:#5BCB8C; --ok-bg:#15311F; --bad:#FF8A80; --bad-bg:#3B1D1B;
+    --focus:#86A8FF; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12151A; --card:#1B1F26; --ink:#E8EBF0; --muted:#98A2B0; --rule:#2E343D;
+  --mark:#FF6E63; --mark-ink:#1A0D0C; --mark-soft:#3A2321;
+  --ok:#5BCB8C; --ok-bg:#15311F; --bad:#FF8A80; --bad-bg:#3B1D1B;
+  --focus:#86A8FF; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:560px;margin:0 auto;padding-block:12px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+button{font:inherit;color:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--rule);background:var(--card);padding:10px 14px;min-height:44px}
+button:focus-visible,input:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+button:disabled{opacity:.5;cursor:default}
+.hidden{display:none!important}
+
+/* header */
+.top{display:flex;flex-direction:column;gap:6px}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);font-weight:700}
+h1{margin:0;font-size:24px;line-height:1.2;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta b{color:var(--ink);font-weight:700}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:999px;padding:3px 10px;background:var(--card);font-size:13px}
+.chip.mark{border-color:var(--mark);color:var(--mark);font-weight:700}
+
+/* mode tabs */
+.modes{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.modes::-webkit-scrollbar{display:none}
+.modes button{white-space:nowrap;border-radius:999px;padding:8px 14px;min-height:40px;font-size:15px}
+.modes button[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* settings row */
+.settings{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.settings .label{font-size:13px;color:var(--muted);margin-right:2px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border-radius:999px;padding:5px 12px;min-height:34px;font-size:14px}
+.chips button[aria-pressed="true"]{background:var(--mark-soft);border-color:var(--mark);color:var(--mark);font-weight:700}
+select{font:inherit;color:inherit;background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:6px 10px;min-height:34px}
+
+/* question card */
+.card{background:var(--card);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);padding:18px 16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.qhead .qnum{font-family:var(--font-mono);font-weight:700;color:var(--mark);font-size:14px}
+.prompt{font-size:22px;line-height:1.3;font-weight:700;text-wrap:balance;min-height:1.3em}
+.prompt .en{font-family:var(--font-mono);font-size:26px;letter-spacing:.01em}
+.prompt .zh{font-size:24px}
+/* passage completion */
+.passage{display:flex;flex-direction:column;gap:8px;font-size:17px;line-height:1.75;min-width:0}
+.passage .pt{font-weight:700;font-size:18px;border-bottom:1px solid var(--rule);padding-bottom:6px}
+.passage .pl{min-width:0;overflow-wrap:anywhere}
+.bl{display:inline-flex;align-items:baseline;gap:4px;vertical-align:baseline;margin:0 2px}
+.bl b{font-family:var(--font-mono);font-size:12px;color:var(--mark);border:1px solid var(--mark);border-radius:999px;padding:0 6px;line-height:1.5}
+.bl input{width:10ch;max-width:100%;min-width:0;font-family:var(--font-mono);font-size:17px;padding:2px 4px;border:0;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:0}
+.bl input.ok{border-bottom-color:var(--ok);background:var(--ok-bg)}
+.bl input.bad{border-bottom-color:var(--bad);background:var(--bad-bg)}
+.blanks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.blanks li{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;font-size:16px}
+.blanks li .n{font-family:var(--font-mono);font-weight:700;min-width:2ch}
+.blanks li .en{font-family:var(--font-mono);font-weight:700}
+.blanks li .zh{color:var(--muted);font-size:14px}
+.blanks li.bad .en{color:var(--bad)}
+.blanks li.ok .en{color:var(--ok)}
+a.yg{font-size:13px;color:var(--focus);text-decoration:none;border:1px solid var(--rule);border-radius:999px;padding:1px 9px;white-space:nowrap;background:var(--card)}
+.transcript{font-size:15px;line-height:1.65;display:flex;flex-direction:column;gap:6px}
+.transcript p{margin:0}
+.transcript b{color:var(--mark)}
+.transcript .sp{display:inline-block;font-family:var(--font-mono);color:var(--muted);margin-right:4px}
+.transcript u.k{text-decoration:underline dotted;text-decoration-color:var(--focus);text-underline-offset:3px;text-decoration-thickness:1.5px}
+.keys{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--paper);border:1px solid var(--rule)}
+.keys .klabel{flex:1 1 100%;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.keys .k{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--rule);background:var(--card);border-radius:999px;padding:3px 10px;cursor:pointer;font-size:14px}
+.keys .k b{font-family:var(--font-mono);font-weight:700;color:var(--focus)}
+.keys .k i{font-style:normal;color:var(--muted);font-size:13px}
+.fb details summary{font-size:14px;color:var(--muted);padding:2px 0}
+.list li .yg{margin-left:6px}
+/* YouGlish panel */
+.ygbox{display:flex;flex-direction:column;gap:10px;min-width:0;border-top:1px solid var(--rule);padding-top:12px}
+.ygtitle{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);font-weight:700}
+.ygwords{display:flex;flex-wrap:wrap;gap:6px}
+.ygwords span{font-family:var(--font-mono);font-size:14px;border:1px solid var(--rule);border-radius:999px;padding:2px 10px;color:var(--muted)}
+.ygwords span.todo{color:var(--bad);border-color:var(--bad)}
+.ygwords span.now{background:var(--mark);color:var(--mark-ink);border-color:var(--mark)}
+.ygwords span.done{color:var(--ok);border-color:var(--ok)}
+#ygplayer{min-height:220px;border-radius:12px;overflow:hidden;background:var(--paper)}
+.yglines{display:flex;flex-direction:column;gap:8px}
+.ygl{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:8px 10px;border-radius:10px;border:1px dashed var(--rule);background:var(--paper);font-size:16px;line-height:1.6;min-width:0}
+.ygl.now{border-style:solid;border-color:var(--mark)}
+.ygl .n{font-family:var(--font-mono);font-size:12px;color:var(--mark);border:1px solid var(--mark);border-radius:999px;padding:0 6px;line-height:1.5}
+.ygl .acc{font-size:12px;color:var(--muted)}
+.ygl .cap{flex:1 1 100%;overflow-wrap:anywhere;min-width:0}
+.ygl .cap b{color:var(--mark)}
+.ygl .blank{display:inline-block;min-width:5ch;border-bottom:2px solid var(--mark);margin:0 3px;vertical-align:baseline;line-height:1}
+.ygl input{width:14ch;max-width:100%;min-width:0;font-family:var(--font-mono);font-size:17px;padding:2px 4px;border:0;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);border-radius:0}
+.ygl input.ok{border-bottom-color:var(--ok);background:var(--ok-bg)}
+.ygl input.bad{border-bottom-color:var(--bad);background:var(--bad-bg)}
+.ygfoot{font-size:12px;color:var(--muted)}
+.ygfoot a{color:inherit}
+/* timer */
+.timer{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.trow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.tclock{display:flex;align-items:baseline;gap:10px}
+.tlabel{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ttime{font-family:var(--font-mono);font-size:34px;font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums;line-height:1}
+.timer.running .ttime{color:var(--mark)}
+.timer.alarm .ttime{color:var(--bad);animation:tflash .6s ease-in-out 4}
+@keyframes tflash{50%{opacity:.25}}
+@media (prefers-reduced-motion: reduce){.timer.alarm .ttime{animation:none}}
+.tbtns{display:flex;gap:6px}
+.tbtns button{min-height:38px;padding:6px 14px}
+.tbtns #tStart{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700}
+.tpresets button{font-size:13px}
+.tswitch{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
+.tswitch input{margin-top:2px}
+@media (min-width: 900px){
+  .wrap{max-width:880px;display:grid;grid-template-columns:560px minmax(240px,1fr);column-gap:20px;align-items:start}
+  .wrap > *{grid-column:1}
+  .wrap > .timer{grid-column:2;grid-row:1 / span 40;position:sticky;top:12px}
+}
+/* phrase list */
+.phrlist{border-top:1px solid var(--rule);padding-top:8px}
+.phrlist summary{font-size:14px;color:var(--muted)}
+.phrlist h4{margin:10px 0 4px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mark)}
+.phrlist ol{margin:0;padding-left:1.4em;font-size:15px;line-height:1.6}
+.phrlist ol li span{color:var(--muted);font-size:14px;margin-left:6px}
+.prompt .en .blank{min-width:7ch}
+.sub{font-size:14px;color:var(--muted)}
+.play{display:flex;align-items:center;justify-content:center;gap:10px;background:var(--mark);color:var(--mark-ink);border-color:var(--mark);font-weight:700;font-size:17px;min-height:56px;border-radius:14px}
+.play svg{width:22px;height:22px;flex:none}
+.play.playing{opacity:.85}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.row > *{flex:1 1 120px}
+.ghost{background:transparent}
+.hint{font-size:16px;padding:10px 12px;border-radius:10px;background:var(--paper);border:1px dashed var(--rule)}
+.hint .en{font-family:var(--font-mono)}
+
+/* answer box */
+.answer{display:flex;flex-direction:column;gap:8px}
+.answer label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.box{display:flex;gap:8px;align-items:stretch}
+.box input{flex:1 1 auto;min-width:0;font-family:var(--font-mono);font-size:22px;letter-spacing:.04em;padding:10px 12px;border:0;border-bottom:3px solid var(--ink);background:transparent;color:var(--ink);border-radius:0}
+.box input::placeholder{color:var(--muted);opacity:.6;letter-spacing:0;font-size:16px;font-family:var(--font-ui)}
+.box button{flex:none;background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700;padding:0 18px}
+
+/* multiple choice */
+.options{display:grid;grid-template-columns:1fr;gap:8px}
+.options button{text-align:left;font-family:var(--font-mono);font-size:17px;padding:12px 14px;display:flex;gap:10px;align-items:center}
+.options button .k{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;border:1px solid var(--rule);font-size:13px;flex:none;font-family:var(--font-ui)}
+.options button.right{background:var(--ok-bg);border-color:var(--ok)}
+.options button.wrong{background:var(--bad-bg);border-color:var(--bad)}
+
+/* feedback */
+.fb{border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;font-size:16px}
+.fb.ok{background:var(--ok-bg);border:1px solid var(--ok)}
+.fb.bad{background:var(--bad-bg);border:1px solid var(--bad)}
+.fb .verdict{font-weight:700}
+.fb .ans{font-family:var(--font-mono);font-size:22px;letter-spacing:.03em;word-break:break-word}
+.fb .ans .x{color:var(--bad);text-decoration:underline wavy;text-underline-offset:3px}
+.fb .yours{color:var(--muted);text-decoration:line-through;font-family:var(--font-mono)}
+.fb .note{font-size:14px;color:var(--muted)}
+.next{background:var(--ink);color:var(--paper);border-color:var(--ink);font-weight:700;font-size:17px;min-height:52px;border-radius:12px}
+
+/* progress */
+.progress{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{flex:1;height:8px;border-radius:999px;background:var(--rule);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--mark);transition:width .25s ease}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+
+/* summary */
+.score{font-family:var(--font-mono);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.02em}
+.score small{font-size:18px;color:var(--muted);font-weight:400;letter-spacing:0}
+.list{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.list li{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-bottom:1px solid var(--rule);padding:6px 0;font-size:15px}
+.list li .en{font-family:var(--font-mono);font-weight:700}
+.list li .zh{color:var(--muted);font-size:14px}
+.list li .cnt{font-variant-numeric:tabular-nums;color:var(--bad);font-size:13px;flex:none}
+.notice{font-size:14px;color:var(--muted);border-left:3px solid var(--mark);padding:4px 10px}
+details summary{cursor:pointer;font-weight:700;padding:6px 0}
+.foot{font-size:12px;color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">IELTS Listening · 目標 6.5</div>
+    <h1>雅思聽力聽寫測驗</h1>
+    <div class="meta">
+      <span class="chip mark" id="countdown">距 11/17 聽力重考</span>
+      <span>今日 <b id="todayStat">0／0</b></span>
+      <span id="bandStat">近 40 題估分：作答 20 題後顯示</span>
+    </div>
+  </header>
+
+  <aside class="timer" id="timer" aria-label="計時器">
+    <div class="trow">
+      <div class="tclock"><span class="tlabel" id="tLabel">讀題</span><span class="ttime" id="tTime">0:30</span></div>
+      <div class="tbtns"><button type="button" id="tStart">開始</button><button type="button" class="ghost" id="tReset">重設</button></div>
+    </div>
+    <div class="chips tpresets" id="tPresets">
+      <button type="button" data-sec="30" data-label="讀題">讀題 30 秒</button>
+      <button type="button" data-sec="30" data-label="檢查答案">檢查 30 秒</button>
+      <button type="button" data-sec="450" data-label="一個 Part">一個 Part 7:30</button>
+      <button type="button" data-sec="1800" data-label="全卷錄音">全卷 30:00</button>
+      <button type="button" data-sec="600" data-label="謄寫答案">謄寫 10:00（紙筆）</button>
+      <button type="button" data-sec="120" data-label="檢查答案">檢查 2:00（電腦）</button>
+    </div>
+    <label class="tswitch"><input type="checkbox" id="tRhythm" checked> 考試節奏：短文按播放先讀題 30 秒，錄音結束後自動倒數 30 秒檢查</label>
+  </aside>
+
+  <nav class="modes" role="tablist" aria-label="測驗模式" id="modes">
+    <button role="tab" data-mode="pass" aria-selected="true">短文填空</button>
+    <button role="tab" data-mode="yg" aria-selected="false" id="ygTab" hidden>YouGlish 單字</button>
+    <button role="tab" data-mode="phr" aria-selected="false">寫作短語</button>
+    <button role="tab" data-mode="syn" aria-selected="false">同義替換</button>
+    <button role="tab" data-mode="num" aria-selected="false">數字與拼名</button>
+    <button role="tab" data-mode="review" aria-selected="false">錯題複習</button>
+  </nav>
+
+  <section class="settings" id="bankRow">
+    <span class="label">題庫</span>
+    <div class="chips" id="banks"></div>
+  </section>
+  <section class="settings" id="voiceRow">
+    <span class="label">口音</span>
+    <select id="accent" aria-label="口音">
+      <option value="random" selected>隨機（每篇換）</option>
+      <option value="en-GB">英國</option>
+      <option value="en-AU">澳洲</option>
+      <option value="en-US">美國</option>
+      <option value="en-NZ">紐西蘭</option>
+      <option value="en-IE">愛爾蘭</option>
+    </select>
+    <span class="label">語速</span>
+    <select id="rate" aria-label="語速">
+      <option value="0.8">慢</option>
+      <option value="0.95" selected>正常</option>
+      <option value="1.1">快</option>
+    </select>
+  </section>
+
+  <main class="card" id="card">
+    <div class="qhead"><span class="qnum" id="qnum">第 1 題／10</span><span id="qkind"></span></div>
+    <div class="prompt" id="prompt"></div>
+    <div class="sub" id="sub"></div>
+    <button class="play" id="play" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <span id="playLabel">播放</span>
+    </button>
+    <div class="row" id="hintRow"><button class="ghost" id="hintBtn" type="button">提示</button></div>
+    <div class="hint hidden" id="hint"></div>
+    <form class="answer" id="form" autocomplete="off">
+      <label for="ans">答案（拼錯不給分）</label>
+      <div class="box">
+        <input id="ans" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="text" enterkeyhint="go" placeholder="在這裡輸入">
+        <button type="submit" id="submit">作答</button>
+      </div>
+    </form>
+    <div class="options hidden" id="options"></div>
+    <div class="passage hidden" id="passage"></div>
+    <div class="fb hidden" id="fb"></div>
+    <details class="phrlist hidden" id="phrList"><summary id="phrSummary">本類短語表</summary><div id="phrBody"></div></details>
+    <div class="ygbox hidden" id="ygbox">
+      <div class="ygtitle" id="ygtitle">YouGlish 真人語速</div>
+      <div id="ygplayer"></div>
+      <div class="yglines" id="yglines"></div>
+      <div class="row">
+        <button type="button" class="ghost" id="ygReplay">重播這句</button>
+        <button type="button" class="ghost" id="ygNext">換一段影片</button>
+        <button type="button" class="next" id="ygAdvance">下一句</button>
+      </div>
+      <div class="fb hidden" id="ygfb"></div>
+      <div class="ygfoot">Powered by <a href="https://youglish.com" target="_blank" rel="noopener">YouGlish.com</a> · 影片來自 YouTube（<a href="https://www.youtube.com/t/terms" target="_blank" rel="noopener">YouTube 服務條款</a>、<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google 隱私權政策</a>）</div>
+    </div>
+    <button class="next hidden" id="next" type="button">下一題</button>
+    <div class="notice hidden" id="notice"></div>
+  </main>
+
+  <div class="progress"><span id="progText">0／10</span><div class="bar"><i id="bar"></i></div><span id="roundScore">答對 0</span></div>
+
+  <section class="card hidden" id="summary">
+    <div class="eyebrow">本回結果</div>
+    <div class="score"><span id="sumScore">0</span><small>／10</small></div>
+    <div class="sub" id="sumNote"></div>
+    <ul class="list" id="sumWrong"></ul>
+    <div class="row">
+      <button class="next" id="again" type="button">再來一回</button>
+      <button id="redo" type="button">只練這回的錯題</button>
+    </div>
+  </section>
+
+  <details class="card" id="errbook">
+    <summary>錯題本 <span class="sub" id="errCount"></span></summary>
+    <div class="sub" id="errNote">錯過的單字會記在這裡；「錯題複習」模式會優先抽這些字。</div>
+    <ul class="list" id="errList"></ul>
+    <div class="sub" id="saveState"></div>
+  </details>
+
+  <div class="foot">短文一篇 ≈ 真題一個 Part 的 5–6 題；單字模式每回 10 題。估分依 40 題換算，僅供參考。</div>
+</div>
+<script>
+/* 題庫：每行「英文|中文」，英文可用 / 列出英式／美式拼法（第一個為播放用） */
+window.BANK_RAW = {
+p1: ['Part 1 生活', `
+surname|姓
+first name|名
+initial|名字縮寫
+date of birth|出生日期
+nationality|國籍
+occupation|職業
+mobile|手機
+postcode|郵遞區號
+address|地址
+street|街
+road|路
+avenue|大道
+lane|巷
+drive|車道（路名）
+crescent|彎月形街（路名）
+court|短街（路名）
+square|廣場
+suburb|郊區
+district|區
+reference number|參考編號
+membership|會員資格
+signature|簽名
+contact|聯絡
+January|一月
+February|二月
+March|三月
+April|四月
+June|六月
+July|七月
+August|八月
+September|九月
+October|十月
+November|十一月
+December|十二月
+Monday|星期一
+Tuesday|星期二
+Wednesday|星期三
+Thursday|星期四
+Friday|星期五
+Saturday|星期六
+Sunday|星期日
+fortnight|兩週
+weekday|平日
+weekend|週末
+quarter|一刻鐘／四分之一
+daily|每日
+weekly|每週
+monthly|每月
+annually|每年
+hundred|百
+thousand|千
+million|百萬
+per cent/percent|百分比
+minimum|最少
+maximum|最多
+deposit|訂金／押金
+refund|退款
+discount|折扣
+fee|費用
+charge|收費
+receipt|收據
+invoice|帳單／發票
+instalment/installment|分期付款
+subscription|訂閱
+voucher|禮券
+coupon|優惠券
+cash|現金
+credit card|信用卡
+debit card|金融卡
+cheque/check|支票
+in advance|預先
+balance|餘額
+budget|預算
+rate|費率
+insurance|保險
+payment|付款
+total|總額
+accommodation|住宿
+flat|公寓（英式）
+apartment|公寓（美式）
+studio|單人套房
+dormitory|宿舍
+landlord|房東
+tenant|房客
+lease|租約
+rent|房租
+bills|帳單（複數）
+utilities|水電瓦斯
+furnished|附家具的
+en-suite|附衛浴的
+kitchen|廚房
+laundry|洗衣間
+heating|暖氣
+air conditioning|冷氣
+garage|車庫
+balcony|陽台
+garden|花園
+available|可用的／可入住
+homestay|寄宿家庭
+host family|寄宿家庭
+neighbour/neighbor|鄰居
+reservation|預訂
+booking|預訂
+confirm|確認
+cancel|取消
+cancellation|取消（名詞）
+itinerary|行程
+departure|出發
+arrival|抵達
+return ticket|來回票
+single ticket|單程票
+platform|月台
+terminal|航廈
+gate|登機門
+luggage|行李
+baggage|行李
+passport|護照
+visa|簽證
+destination|目的地
+guided tour|導覽行程
+package|套裝行程
+coach|遊覽車
+ferry|渡輪
+underground|地鐵（英式）
+vehicle|車輛
+licence/license|駕照／執照
+timetable|時刻表
+delay|延誤
+journey|旅程
+application|申請
+applicant|申請人
+qualification|學歷／資格
+experience|經驗
+full-time|全職
+part-time|兼職
+shift|輪班
+salary|月薪
+wage|時薪／工資
+overtime|加班
+referee|推薦人
+reference|推薦信／參考
+vacancy|職缺
+position|職位
+interview|面試
+uniform|制服
+training|訓練
+repair|修理
+replace|更換
+warranty|保固
+guarantee|保證／保固
+delivery|送貨
+parcel|包裹
+courier|快遞
+complaint|投訴
+customer service|客服
+appointment|預約（看診、會面）
+temporary|臨時的
+permanent|長期的／永久的
+emergency|緊急狀況
+certificate|證書
+`],
+p2: ['Part 2 場所', `
+entrance|入口
+exit|出口
+reception|接待處
+information desk|服務台
+car park|停車場
+lift|電梯（英式）
+elevator|電梯（美式）
+stairs|樓梯
+ground floor|一樓（英式）
+basement|地下室
+corridor|走廊
+gallery|藝廊
+exhibition|展覽
+auditorium|禮堂
+lecture theatre/lecture theater|階梯教室
+gym|健身房
+fitness centre/fitness center|健身中心
+swimming pool|游泳池
+café/cafe|咖啡廳
+cafeteria|自助餐廳
+canteen|員工／學生餐廳
+restaurant|餐廳
+library|圖書館
+laboratory|實驗室
+playground|遊樂場
+picnic area|野餐區
+campsite|營地
+cabin|小木屋
+trail|步道
+footpath|小徑
+lookout|觀景台
+viewpoint|觀景點
+visitor centre/visitor center|遊客中心
+gift shop|禮品店
+souvenir|紀念品
+toilets|廁所
+locker|置物櫃
+cloakroom|衣帽間
+storage|儲藏室
+warehouse|倉庫
+factory|工廠
+workshop|工作坊／研習課
+fountain|噴泉
+statue|雕像
+monument|紀念碑
+pond|池塘
+lake|湖
+stream|溪
+greenhouse|溫室
+nursery|苗圃／托兒所
+bridge|橋
+tower|塔
+opposite|對面
+next to|旁邊
+beside|旁邊
+adjacent|相鄰的
+behind|後面
+in front of|前面
+between|在…之間
+corner|轉角
+straight ahead|直走
+along|沿著
+past|經過
+across|穿過／對面
+roundabout|圓環
+junction|路口
+crossroads|十字路口
+intersection|十字路口（美式）
+north|北
+south|南
+east|東
+west|西
+clockwise|順時針
+anticlockwise|逆時針
+circular|圓形的
+rectangular|長方形的
+oval|橢圓形的
+halfway|一半路程
+diagonal|對角線的
+festival|節慶
+fair|市集
+carnival|嘉年華
+session|場次
+course|課程
+volunteer|志工
+charity|慈善
+fundraising|募款
+admission|入場（費）
+entry|入場
+brochure|手冊
+leaflet|傳單
+pamphlet|小冊子
+schedule|時程
+venue|場地
+facilities|設施
+equipment|設備
+refreshments|茶點
+registration|登記／報名
+enrol/enroll|報名（課程）
+performance|表演
+concert|音樂會
+audio guide|語音導覽
+council|地方議會／市政府
+community centre/community center|社區中心
+recycling|回收
+rubbish|垃圾（英式）
+opening hours|營業時間
+supervision|看管
+safety|安全
+first aid|急救
+sponsor|贊助
+donation|捐款
+membership fee|會費
+`],
+p3: ['Part 3 學術', `
+assignment|作業
+essay|論說文
+report|報告
+dissertation|學位論文
+thesis|論文
+presentation|口頭報告
+seminar|專題討論課
+tutorial|小組指導課
+lecture|講課
+lecturer|講師
+tutor|導師
+supervisor|指導教授
+deadline|截止日
+extension|延期
+draft|草稿
+outline|大綱
+feedback|回饋
+bibliography|參考書目
+source|來源
+citation|引用
+plagiarism|抄襲
+module|課程單元
+semester|學期
+term|學期（英式）
+undergraduate|大學生
+postgraduate|研究生
+diploma|文憑
+degree|學位
+credit|學分
+grade|成績
+mark|分數（英式）
+assessment|評量
+placement|實習（英式）
+internship|實習
+handout|講義
+attendance|出席
+scholarship|獎學金
+grant|補助
+department|系所
+faculty|學院
+campus|校園
+research|研究
+survey|調查
+questionnaire|問卷
+interview|訪談
+sample|樣本
+participant|參與者
+respondent|受訪者
+data|資料
+statistics|統計
+analysis|分析
+analyse/analyze|分析（動詞）
+findings|研究發現
+results|結果
+conclusion|結論
+methodology|方法論
+approach|方法／取向
+hypothesis|假說
+theory|理論
+experiment|實驗
+observation|觀察
+fieldwork|田野調查
+literature review|文獻回顧
+case study|個案研究
+variable|變數
+factor|因素
+evidence|證據
+accurate|準確的
+reliable|可靠的
+valid|有效的
+limitation|限制
+bias|偏誤
+primary source|一手資料
+secondary source|二手資料
+summary|摘要
+structure|結構
+`],
+p4: ['Part 4 講座', `
+climate change|氣候變遷
+global warming|全球暖化
+greenhouse gas|溫室氣體
+carbon dioxide|二氧化碳
+emissions|排放
+pollution|污染
+renewable energy|再生能源
+solar power|太陽能
+wind power|風力
+fossil fuels|化石燃料
+coal|煤
+deforestation|森林砍伐
+drought|乾旱
+flood|洪水
+storm|暴風
+ecosystem|生態系
+habitat|棲地
+species|物種
+endangered|瀕危的
+extinct|絕種的
+biodiversity|生物多樣性
+conservation|保育
+wildlife|野生動物
+predator|掠食者
+prey|獵物
+migration|遷徙
+breeding|繁殖
+nest|巢
+mammal|哺乳類
+reptile|爬蟲類
+insect|昆蟲
+vegetation|植被
+soil|土壤
+erosion|侵蝕
+waste|廢棄物
+landfill|掩埋場
+sustainable|永續的
+temperature|溫度
+rainfall|降雨量
+humidity|濕度
+oxygen|氧氣
+nutrients|養分
+minerals|礦物質
+nutrition|營養
+diet|飲食
+obesity|肥胖
+exercise|運動
+stress|壓力
+anxiety|焦慮
+memory|記憶
+concentration|專注力
+attention|注意力
+sleep|睡眠
+fatigue|疲勞
+immune system|免疫系統
+infection|感染
+virus|病毒
+disease|疾病
+symptom|症狀
+diagnosis|診斷
+treatment|治療
+therapy|療法
+medicine|藥／醫學
+vaccine|疫苗
+prevention|預防
+well-being|幸福感
+behaviour/behavior|行為
+motivation|動機
+emotion|情緒
+brain|大腦
+nerve|神經
+hormone|荷爾蒙
+patient|病人
+surgery|手術
+marketing|行銷
+advertising|廣告
+brand|品牌
+consumer|消費者
+customer|顧客
+client|客戶
+profit|利潤
+revenue|營收
+loss|虧損
+investment|投資
+funding|資金
+manufacturing|製造
+production|生產
+supply|供給
+demand|需求
+retail|零售
+wholesale|批發
+strategy|策略
+competition|競爭
+competitor|競爭者
+productivity|生產力
+efficiency|效率
+employee|員工
+employer|雇主
+staff|職員
+recruitment|招募
+promotion|升遷／促銷
+export|出口
+import|進口
+trade|貿易
+economy|經濟
+inflation|通膨
+recession|衰退
+management|管理
+leadership|領導
+teamwork|團隊合作
+urban|城市的
+rural|鄉村的
+population|人口
+density|密度
+infrastructure|基礎建設
+public transport|大眾運輸
+congestion|塞車
+commute|通勤
+commuter|通勤者
+pedestrian|行人
+cyclist|自行車騎士
+housing|住宅
+residential|住宅的
+construction|建造
+architecture|建築
+commercial|商業的
+industrial|工業的
+timber|木材
+concrete|混凝土
+steel|鋼
+brick|磚
+roof|屋頂
+foundation|地基
+insulation|隔熱
+ventilation|通風
+technology|科技
+device|裝置
+software|軟體
+artificial intelligence|人工智慧
+robot|機器人
+automation|自動化
+digital|數位的
+network|網路
+communication|溝通
+media|媒體
+innovation|創新
+invention|發明
+privacy|隱私
+security|安全
+satellite|衛星
+sensor|感測器
+signal|訊號
+generation|世代
+society|社會
+tradition|傳統
+ancient|古代的
+civilisation/civilization|文明
+archaeology/archeology|考古學
+excavation|挖掘
+site|遺址／地點
+artefact/artifact|文物
+pottery|陶器
+century|世紀
+decade|十年
+era|時代
+settlement|聚落
+empire|帝國
+merchant|商人
+route|路線
+ruins|遺跡
+tomb|墓
+volcano|火山
+earthquake|地震
+glacier|冰河
+desert|沙漠
+coast|海岸
+cliff|懸崖
+valley|山谷
+island|島
+continent|大陸
+agriculture|農業
+farming|耕作
+crop|作物
+harvest|收成
+irrigation|灌溉
+fertiliser/fertilizer|肥料
+livestock|牲畜
+explorer|探險家
+expedition|探險
+navigation|航海
+whale|鯨
+dolphin|海豚
+shark|鯊魚
+penguin|企鵝
+bee|蜜蜂
+butterfly|蝴蝶
+ant|螞蟻
+bat|蝙蝠
+`],
+spell: ['高頻拼錯字', `
+accommodation|住宿
+necessary|必要的
+separate|分開的
+receive|收到
+receipt|收據
+recommend|推薦
+environment|環境
+government|政府
+business|生意
+temperature|溫度
+restaurant|餐廳
+vegetable|蔬菜
+library|圖書館
+Wednesday|星期三
+February|二月
+beautiful|美的
+definitely|絕對地
+excellent|優秀的
+knowledge|知識
+questionnaire|問卷
+committee|委員會
+colleague|同事
+address|地址
+calendar|日曆
+occasionally|偶爾
+beginning|開始
+successful|成功的
+immediately|立刻
+independent|獨立的
+medicine|藥
+museum|博物館
+century|世紀
+guarantee|保證
+brochure|手冊
+mortgage|房貸
+psychology|心理學
+architecture|建築
+percentage|百分比
+`]
+};
+
+/* 同義替換：[題目字, [錄音可能說的]] */
+window.SYN = [
+['cheap',['inexpensive','affordable','low-cost','reasonable']],
+['expensive',['costly','pricey']],
+['free',['no charge','complimentary','at no cost']],
+['big',['huge','enormous','spacious']],
+['small',['tiny','compact','limited']],
+['difficult',['challenging','tough','demanding','tricky']],
+['easy',['straightforward','simple']],
+['important',['essential','crucial','vital','significant']],
+['old',['ancient','outdated','traditional']],
+['new',['modern','recent','latest','up to date']],
+['enough',['sufficient','adequate','plenty of']],
+['popular',['well-known','in demand','sought-after']],
+['busy',['crowded','packed','hectic']],
+['quiet',['peaceful','calm']],
+['safe',['secure','protected']],
+['buy',['purchase','pay for']],
+['choose',['select','opt for','go for','pick']],
+['start',['begin','commence','set up','launch']],
+['finish',['complete','wrap up','get through']],
+['increase',['rise','grow','go up','climb']],
+['decrease',['fall','decline','drop','reduce']],
+['help',['assist','support','give a hand']],
+['need',['require','have to']],
+['show',['demonstrate','display','indicate','reveal']],
+['change',['alter','modify','adjust','switch']],
+['look at',['examine','consider','investigate','go through']],
+['talk about',['discuss','cover','go over','deal with']],
+['improve',['enhance','get better','make progress']],
+['cause',['lead to','result in','bring about']],
+['prevent',['stop','avoid','protect against']],
+['give',['provide','supply','offer','hand out']],
+['contact',['get in touch with','reach']],
+['check',['make sure','confirm','verify']],
+['job',['position','occupation','employment','career']],
+['money',['funds','finance','payment']],
+['problem',['issue','difficulty','trouble','concern']],
+['way',['method','approach','means','technique']],
+['children',['kids','youngsters','young people']],
+['elderly',['senior citizens','older people','pensioners']],
+['accommodation',['place to stay','somewhere to live','housing']],
+['transport',['getting around','buses and trains']],
+['food',['meals','refreshments','catering']],
+['advantage',['benefit','plus','strength']],
+['disadvantage',['drawback','downside','weakness']],
+['information',['details','facts','data']],
+['teacher',['tutor','lecturer','instructor']],
+['staff',['employees','workers']],
+['cost',['price','fee','charge']],
+['every year',['annually','once a year','yearly']],
+['every two weeks',['fortnightly','every fortnight']],
+['every month',['monthly','once a month']],
+['twice a year',['every six months','biannually']],
+['a quarter',['25%','one in four']],
+['half',['50%','one in two']],
+['the majority',['most','more than half','the bulk']],
+['a minority',['few','a small number','not many']],
+['about',['approximately','around','roughly','nearly']],
+['at least',['a minimum of','no fewer than']],
+['at most',['a maximum of','up to','no more than']],
+['double',['twice as much','two times']],
+['a decade',['ten years']],
+['currently',['at the moment','now','at present','these days']],
+['in the past',['previously','formerly','originally']],
+['in the future',['eventually','later on','in the long run']],
+['immediately',['straight away','right away','at once']],
+['because of',['due to','as a result of','owing to']]
+];
+
+/* 短文填空：spoken 為字串＝獨白；為陣列＝對話（A/B 輪流）。shown 的 {n} 是空格；ans 每格可接受的答案；zh 每格提示 */
+window.PASS = [
+{part:'p1', title:'訂青年旅館房間', spoken:[
+"Good morning, Riverside Hostel. How can I help?",
+"Hi, I'd like to book a room for three nights, from the twelfth of June.",
+"Certainly. Single or twin?",
+"A single, please, if you have one.",
+"We do. Could I take your name?",
+"It's Sarah Mackenzie. That's M, A, C, K, E, N, Z, I, E.",
+"Thank you. A single is thirty-eight pounds a night, and that includes breakfast. We'll need a deposit of forty pounds to hold the booking.",
+"That's fine. Can I pay that by card?",
+"Yes, over the phone is fine. And just so you know, check-in is from two o'clock, and the front door is locked after midnight, so you'll need the code, which we'll email you."],
+shown:"Riverside Hostel – booking form\nName: Sarah {1}\nRoom type: {2}\nArrival: {3} June, for 3 nights\nPrice per night: £38, including {4}\nDeposit: £{5}\nCheck-in from: {6} pm",
+ans:[['Mackenzie'],['single'],['12','twelve','12th','twelfth'],['breakfast'],['40','forty'],['2','two']],
+keys:[["book a room", "訂房"], ["Single or twin", "單人房或雙床房"], ["take your name", "請問大名"], ["a night", "每晚"], ["hold the booking", "保留訂房"], ["check-in", "入住"], ["locked after midnight", "午夜後上鎖"], ["the code", "門禁密碼"]],
+zh:['姓氏（有逐字母拼）','房型','日期','含什麼','押金','時間']},
+{part:'p1', title:'詢問健身房會員', spoken:[
+"Hello, I'm interested in joining the gym. Could you tell me about membership?",
+"Of course. There are two options. The standard membership is forty-five pounds a month, and that gives you the gym and the pool. The premium is sixty pounds, and that also includes all the classes, like yoga and spinning.",
+"I think the standard one is enough. Is there a joining fee?",
+"There is, normally twenty-five pounds, but it's waived if you join before the end of March.",
+"Great. What are the opening hours?",
+"We open at six in the morning on weekdays, and at eight at the weekend. We close at ten every night. You'll need to bring a passport-sized photo for your membership card, and proof of address, like a recent bill."],
+shown:"Gym membership – notes\nStandard: £45 per month – gym and {1}\nPremium: £{2} per month – also includes classes\nJoining fee: £25 (free if you join before the end of {3})\nWeekday opening time: {4} am\nBring: a photo, and a recent {5} as proof of address",
+ans:[['pool'],['60','sixty'],['March'],['6','six'],['bill']],
+keys:[["joining the gym", "加入健身房"], ["two options", "兩種方案"], ["standard", "標準方案"], ["premium", "高級方案"], ["joining fee", "入會費"], ["waived", "免收"], ["opening hours", "營業時間"], ["proof of address", "地址證明"]],
+zh:['設施','金額','月份','時間','文件']},
+{part:'p1', title:'租公寓', spoken:[
+"I'm calling about the flat on Gordon Street that was advertised online.",
+"Yes, it's still available. It's a two-bedroom flat on the second floor, and it's fully furnished.",
+"How much is the rent?",
+"It's nine hundred and fifty pounds a month. The bills aren't included, but the landlord pays for the water. There's no parking, I'm afraid, but there's a bus stop right outside, and the station is a ten-minute walk.",
+"And is there a garden?",
+"There's a shared garden at the back, and a small balcony off the kitchen. You'd need to pay a deposit equal to one month's rent, and the minimum contract is twelve months.",
+"Could I view it this week?",
+"Yes. How about Thursday at half past five?"],
+shown:"Flat to rent\nAddress: {1} Street – 2 bedrooms, second floor, furnished\nRent: £{2} per month; bills not included (landlord pays for {3})\nTransport: bus stop outside; station is a {4}-minute walk\nOutside space: shared garden and a small {5}\nMinimum contract: {6} months\nViewing: Thursday, 5.30 pm",
+ans:[['Gordon'],['950','nine hundred and fifty'],['water'],['10','ten'],['balcony'],['12','twelve']],
+keys:[["advertised online", "網路上刊登的"], ["two-bedroom", "兩房"], ["fully furnished", "附全套家具"], ["the rent", "房租"], ["no parking", "沒有停車位"], ["shared garden", "共用花園"], ["minimum contract", "最短租約"], ["view it", "看房"]],
+zh:['路名','金額','帳單項目','數字','戶外空間','數字']},
+{part:'p1', title:'應徵咖啡店週末工', spoken:[
+"I saw the sign in the window about the part-time job. Is it still available?",
+"It is. We're looking for someone to work weekends, Saturday and Sunday, from eight until four. The pay is twelve pounds an hour, and you'd get a free meal on each shift.",
+"Do I need any experience?",
+"Not really, we provide training. But you'd need to be comfortable using the coffee machine, and we'd want you to wear a black shirt. We provide the apron.",
+"How do I apply?",
+"Just fill in an application form – I can give you one now – and we'd need the name of one referee, ideally a previous employer or a teacher. Interviews are next Wednesday."],
+shown:"Café – weekend job\nHours: Saturday and Sunday, 8 am to 4 pm\nPay: £{1} per hour, plus a free {2} each shift\nTraining provided; must be able to use the coffee {3}\nClothing: own black shirt; {4} provided\nTo apply: application form, and the name of one {5}\nInterviews: next {6}",
+ans:[['12','twelve'],['meal'],['machine'],['apron'],['referee'],['Wednesday']],
+keys:[["part-time job", "兼職工作"], ["work weekends", "週末上班"], ["The pay", "薪資"], ["an hour", "每小時"], ["each shift", "每一班"], ["provide training", "提供訓練"], ["application form", "申請表"], ["Interviews", "面試"]],
+zh:['金額','福利','設備','衣物','人','星期']},
+{part:'p1', title:'報名一日遊', spoken:[
+"I'd like to book the day trip to the lakes on Saturday.",
+"Certainly. The coach leaves from outside the museum at half past seven, and we get back at around six in the evening. The price is forty-two pounds for adults, and that includes the boat trip, but lunch isn't included, so bring a packed lunch or buy something in the village.",
+"Is there much walking?",
+"There's a two-hour walk in the afternoon, so wear comfortable shoes, and bring a waterproof jacket. The weather changes quickly up there.",
+"Can I pay now?",
+"Yes. I'll need your full name and a contact number. And if you cancel more than forty-eight hours before, you'll get a full refund."],
+shown:"Lakes day trip – Saturday\nDeparts: 7.30 am from outside the {1}\nReturns: about 6 pm\nPrice: £{2}, including the {3} trip (lunch not included)\nAfternoon walk: {4} hours – wear comfortable shoes and bring a {5} jacket\nFull refund if cancelled at least {6} hours in advance",
+ans:[['museum'],['42','forty-two','forty two'],['boat'],['2','two'],['waterproof'],['48','forty-eight','forty eight']],
+keys:[["day trip", "一日遊"], ["The coach leaves", "遊覽車出發"], ["get back", "回到"], ["The price", "價格"], ["packed lunch", "自備午餐"], ["comfortable shoes", "好走的鞋"], ["contact number", "聯絡電話"], ["full refund", "全額退款"]],
+zh:['地點','金額','交通工具','數字','形容詞','數字']},
+{part:'p1', title:'買旅遊保險', spoken:[
+"Hello, I'd like to get some travel insurance for a trip to Japan.",
+"Certainly. How long are you going for?",
+"Three weeks, from the second of August.",
+"And is it just you travelling?",
+"Yes, just me.",
+"OK. Our standard policy is thirty-six pounds for that period. That covers medical costs up to five million pounds, cancellation up to two thousand, and lost luggage up to one thousand. There's an excess of fifty pounds on each claim.",
+"Does it cover skiing? I might go to the mountains.",
+"Not the standard one. Winter sports cover is an extra fifteen pounds. And one more thing: you need to buy the policy at least seven days before you travel for the cancellation cover to apply.",
+"That's fine. Can I get the documents by email?",
+"Yes, we'll send the certificate as soon as the payment goes through."],
+shown:"Travel insurance – Japan\nDates: 3 weeks from {1} August\nStandard policy: £36\nCover: medical up to £5 million; cancellation up to £{2}; lost {3} up to £1,000\nExcess: £{4} per claim\nWinter sports: extra £{5}\nBuy at least {6} days before travel for cancellation cover\nDocuments sent by email",
+ans:[['2','2nd','second'],['2000','2,000','two thousand'],['luggage'],['50','fifty'],['15','fifteen'],['7','seven']],
+keys:[["travel insurance", "旅遊保險"], ["standard policy", "標準保單"], ["medical costs", "醫療費用"], ["cancellation", "取消"], ["excess", "自負額"], ["each claim", "每次理賠"], ["Winter sports cover", "冬季運動保障"], ["certificate", "保險證明"]],
+zh:['日期','金額','名詞','金額','金額','數字']},
+{part:'p2', title:'春季市集廣播', spoken:"Welcome to the Greenfield Spring Festival. Let me tell you what's on today. The main stage is in the park, next to the fountain, and the first band starts at eleven. Food stalls are along the path by the river. There's everything from Thai curry to ice cream. If you've come by car, please note that the car park behind the library is full, so use the one at the station, which costs three pounds for the day. Children's activities are in the large tent near the main entrance, and all of them are free, but children under eight must be accompanied by an adult. Toilets are beside the café, and there's a first aid point in the information tent, where you can also pick up a map. Finally, we're raising money for the children's hospital today, so please give generously at the collection points.",
+shown:"Spring Festival – information\nMain stage: in the park, next to the {1}; first band at 11 am\nFood stalls: along the path by the {2}\nParking: the car park behind the library is full – use the one at the {3} (£3 per day)\nChildren's activities: large tent near the main entrance; free; under-{4}s must be with an adult\nFirst aid: in the {5} tent (maps also available there)\nMoney raised goes to the children's {6}",
+ans:[['fountain'],['river'],['station'],['8','eight'],['information'],['hospital']],
+keys:[["main stage", "主舞台"], ["Food stalls", "小吃攤"], ["come by car", "開車來"], ["car park", "停車場"], ["Children's activities", "兒童活動"], ["accompanied by an adult", "由成人陪同"], ["first aid point", "急救站"], ["raising money", "募款"]],
+zh:['地標','地形','地點','數字','名詞','機構']},
+{part:'p2', title:'博物館導覽開場', spoken:"Good morning everyone, and welcome to the City Museum. I'm Tom, and I'll be your guide this morning. Before we start, a few practical things. Bags larger than a handbag need to go in the lockers, which are in the basement, and you'll need a one-pound coin, which you get back. Photography is allowed everywhere except in the gallery on the first floor, where the paintings are too fragile for flash. The tour takes about ninety minutes, and we'll finish in the café, where tour members get a ten per cent discount. If you'd like to use the audio guide instead, you can hire one at the desk for four pounds. The museum shop closes at five, half an hour before the museum itself. And please keep your ticket, because you'll need it to get back in if you go outside for lunch.",
+shown:"City Museum – guided tour\nLarge bags: lockers in the {1} (£1 coin, returned)\nNo photography in the {2} on the first floor\nTour length: about {3} minutes; ends in the café ({4}% discount for tour members)\nAudio guide: £{5}, from the desk\nShop closes at 5 pm; museum at 5.30 pm\nKeep your {6} to get back in",
+ans:[['basement'],['gallery'],['90','ninety'],['10','ten'],['4','four'],['ticket']],
+keys:[["your guide", "導覽員"], ["lockers", "置物櫃"], ["Photography", "攝影"], ["too fragile", "太脆弱"], ["The tour takes", "導覽需時"], ["discount", "折扣"], ["audio guide", "語音導覽"], ["get back in", "再進來"]],
+zh:['樓層','場所','數字','數字','金額','物品']},
+{part:'p2', title:'保護區志工說明', spoken:"Thanks for volunteering at the reserve this weekend. We'll be working on the new footpath that leads from the car park to the lake. The main job is moving gravel, so you'll need strong boots and gloves. We provide the gloves, but not the boots. Please bring your own lunch and a water bottle; there's a tap by the visitor centre where you can refill it. We start at nine and finish at three, with a break at midday. If it rains heavily, we'll stop and do some work in the greenhouse instead, planting seedlings. Children over twelve are welcome if they come with a parent. At the end of the day, everyone gets a free ticket for the bird-watching boat trip, which runs on Sundays.",
+shown:"Volunteer weekend – nature reserve\nTask: building a {1} from the car park to the lake (moving gravel)\nBring: strong {2} and a packed lunch (gloves are provided)\nWater: refill bottles at the tap by the {3} centre\nHours: 9 am to {4} pm, with a break at midday\nIf it rains heavily: planting seedlings in the {5}\nChildren: must be over {6} and with a parent\nReward: free ticket for the bird-watching boat trip",
+ans:[['footpath'],['boots'],['visitor'],['3','three'],['greenhouse'],['12','twelve']],
+keys:[["volunteering", "當志工"], ["the reserve", "保護區"], ["moving gravel", "搬碎石"], ["gloves", "手套"], ["water bottle", "水壺"], ["rains heavily", "下大雨"], ["seedlings", "幼苗"], ["with a parent", "由家長陪同"]],
+zh:['名詞','裝備','名詞','時間','場所','數字']},
+{part:'p2', title:'運動中心秋季異動', spoken:"Hello, I'm the manager of the Westside Sports Centre, and I'd like to tell you about some changes this autumn. First, the swimming pool will be closed for the whole of October for repairs to the roof, so swimming lessons will move to the pool at the university, which is a five-minute walk away. Second, we're opening a new climbing wall in November, in what used to be the squash courts. Beginners' sessions will run on Tuesday evenings, and all the equipment, including shoes, is included in the price. Membership fees are going up slightly, by two pounds a month, but students will still get a twenty per cent discount. Finally, the café is now run by a local bakery, so there's fresh bread every morning, and it opens at seven instead of eight.",
+shown:"Westside Sports Centre – autumn changes\nPool closed in {1} for repairs to the {2}; lessons move to the university pool (5-minute walk)\nNew climbing wall opens in November in the old {3} courts; beginners on {4} evenings; all equipment included\nMembership: up by £{5} a month; students still get a {6}% discount\nCafé: now run by a local bakery; opens at 7 am",
+ans:[['October'],['roof'],['squash'],['Tuesday'],['2','two'],['20','twenty']],
+keys:[["some changes", "一些異動"], ["closed for", "關閉以便"], ["repairs", "維修"], ["swimming lessons", "游泳課"], ["climbing wall", "攀岩牆"], ["Beginners' sessions", "初學者課程"], ["Membership fees", "會費"], ["going up", "上漲"]],
+zh:['月份','建築部位','運動','星期','金額','數字']},
+{part:'p2', title:'市區共享單車', spoken:"The city's new bike hire scheme starts next Monday. There are two hundred bikes at twenty stations around the centre, and you'll find them outside the railway station, the hospital, and the main shopping centre, among other places. To use a bike, download the app, register with your bank card, and you'll get a code to unlock it. The first thirty minutes of every journey are free; after that it's one pound for each extra half hour. If you return the bike to a station that's full, the app will show you the nearest one with space, usually within two hundred metres. Helmets aren't provided, so we strongly recommend bringing your own. And if you find a damaged bike, press the red button on the handlebar and we'll collect it.",
+shown:"Bike hire scheme – from next Monday\n{1} bikes at 20 stations (e.g. railway station, {2}, shopping centre)\nTo start: download the app and register with a bank {3}; you receive a code to unlock the bike\nCost: first {4} minutes free, then £1 per extra half hour\nIf a station is full, the app shows the nearest one with space (usually within 200 metres)\nBring your own {5}\nDamaged bike: press the {6} button on the handlebar",
+ans:[['200','two hundred'],['hospital'],['card'],['30','thirty'],['helmet','helmets'],['red']],
+keys:[["bike hire scheme", "共享單車方案"], ["download the app", "下載 app"], ["register", "註冊"], ["unlock", "解鎖"], ["journey", "行程"], ["extra half hour", "額外半小時"], ["return the bike", "還車"], ["damaged", "損壞的"]],
+zh:['數字','地點','物品','數字','裝備','顏色']},
+{part:'p3', title:'論文指導：都市農業', spoken:[
+"So, Maria, how's the essay on urban farming going?",
+"I've done the reading, but I'm finding it hard to narrow down the topic. There's so much material.",
+"That's the usual problem. I'd suggest you focus on one city, perhaps Singapore, since there's a lot of recent data. What sources have you found?",
+"Mostly journal articles, and a government report from 2023. I also found some newspaper articles, but I wasn't sure if I should use them.",
+"You can, but keep them to a minimum. They're fine for examples, not for your main argument. And remember the word limit is three thousand, not including the bibliography. When can you send me a draft?",
+"By the end of next week?",
+"Let's say the fifteenth. Then I can give you feedback before the Easter break."],
+shown:"Essay on urban farming – tutorial notes\nProblem: too much material – needs to {1} the topic down\nTutor's suggestion: focus on one {2}, e.g. Singapore\nSources so far: journal articles; a government {3} (2023); newspaper articles (use only for {4})\nWord limit: {5} words, not including the bibliography\nDraft due: the {6}",
+ans:[['narrow'],['city'],['report'],['examples'],['3000','3,000','three thousand'],['15th','15','fifteenth']],
+keys:[["done the reading", "讀完資料了"], ["so much material", "太多材料"], ["focus on", "聚焦於"], ["journal articles", "期刊文章"], ["keep them to a minimum", "盡量少用"], ["main argument", "主要論點"], ["word limit", "字數上限"], ["a draft", "草稿"]],
+zh:['動詞','名詞','文件類型','名詞（複數）','數字','日期']},
+{part:'p3', title:'小組報告分工：回收', spoken:[
+"We need to decide how to split the presentation. It's twenty minutes in total, and then five minutes for questions.",
+"How about you do the introduction and the background, and I do the case study? I interviewed the manager of the recycling centre last week.",
+"Good. What did she say?",
+"The main problem isn't collecting the waste, it's finding buyers for the plastic. Glass and paper are easy to sell, but plastic often ends up in landfill anyway.",
+"That's a strong point. We should put that on a slide with the figures. Did you get the numbers?",
+"Yes. About forty per cent of the plastic they collect can't be recycled because it's contaminated. Food waste, mostly.",
+"OK. And let's keep the slides simple. The tutor said last time we had too much text. I'll do the conclusion, and we should practise at least twice before Friday."],
+shown:"Presentation plan – recycling\nLength: 20 minutes, plus {1} minutes for questions\nStudent A: introduction, background and {2}\nStudent B: case study, based on an interview with the recycling centre {3}\nKey point: the real difficulty is finding {4} for plastic\nAbout {5}% of the plastic collected is contaminated, mainly by food {6}\nSlides: less text; practise at least twice before Friday",
+ans:[['5','five'],['conclusion'],['manager'],['buyers'],['40','forty'],['waste']],
+keys:[["split the presentation", "分配報告"], ["the introduction", "開場"], ["case study", "個案研究"], ["interviewed", "訪談了"], ["collecting the waste", "收集廢棄物"], ["ends up in landfill", "最後進掩埋場"], ["contaminated", "受污染"], ["practise", "練習"]],
+zh:['數字','報告部分','職位','名詞（複數）','數字','名詞']},
+{part:'p3', title:'問卷設計：指導教授回饋', spoken:[
+"I've looked at your questionnaire, and I think it's too long. Forty questions will put people off.",
+"I was worried about that. Which ones should I cut?",
+"The ones about income. People don't like answering them, and they're not central to your question. Try to get it down to about twenty. And where will you find your participants?",
+"I was going to stand outside the library and ask students.",
+"That gives you a biased sample – only people who use the library. Better to send it by email to a whole department, and offer something small, like a voucher, to increase the response rate.",
+"How many responses do I need?",
+"For this kind of analysis, at least a hundred. And run a pilot with five or six people first, to check the questions make sense."],
+shown:"Questionnaire – supervisor's feedback\nToo long: reduce from 40 to about {1} questions; remove the questions about {2}\nAsking students outside the library would give a {3} sample\nBetter: email a whole department, and offer a {4} to raise the response rate\nMinimum number of responses: {5}\nFirst run a {6} with 5 or 6 people",
+ans:[['20','twenty'],['income'],['biased'],['voucher'],['100','a hundred','one hundred','hundred'],['pilot']],
+keys:[["too long", "太長"], ["put people off", "讓人卻步"], ["not central to", "不是核心"], ["participants", "受試者"], ["sample", "樣本"], ["a whole department", "整個系"], ["response rate", "回覆率"], ["make sense", "講得通"]],
+zh:['數字','主題','形容詞','物品','數字','名詞']},
+{part:'p3', title:'海岸野外調查報告', spoken:[
+"Have you finished the report on the coastal field trip?",
+"Nearly. I'm still working on the section about erosion. The cliffs at the north end are retreating about half a metre a year, which is much faster than I expected.",
+"That's because of the storms last winter, isn't it? The sea wall only protects the part near the town.",
+"Right. And the council can't afford to extend it, so they're planting grass on the dunes instead, to hold the sand in place.",
+"Did you include the photos we took?",
+"Only three. The tutor said we lose marks if we use too many. I've put the rest in the appendix.",
+"Good idea. What's the deadline again?",
+"Monday the twentieth, by noon, and it has to be uploaded, not handed in on paper."],
+shown:"Coastal field trip – report\nCliffs at the north end are retreating about {1} a metre per year\nCause: last winter's {2}\nThe sea wall protects only the area near the {3}\nCouncil's solution: planting {4} on the dunes to hold the sand\nPhotos: three in the main report; the rest in the {5}\nDeadline: Monday 20th, 12 noon; the report must be {6}, not handed in on paper",
+ans:[['half'],['storms'],['town'],['grass'],['appendix'],['uploaded']],
+keys:[["field trip", "野外調查"], ["erosion", "侵蝕"], ["retreating", "後退"], ["sea wall", "海堤"], ["can't afford", "負擔不起"], ["hold the sand in place", "固定沙子"], ["lose marks", "被扣分"], ["the deadline", "截止日"]],
+zh:['數量','天氣','地點','植物','報告部分','動詞（過去分詞）']},
+{part:'p3', title:'實習選擇', spoken:[
+"I've been offered two placements, and I can't decide. One is at a marketing company in London, and the other is at a small charity here in Leeds.",
+"What does each one involve?",
+"The marketing job is mostly social media – writing posts and analysing the statistics. The charity one is more varied: fundraising, organising events, and some work with volunteers.",
+"And which would be more useful for your dissertation?",
+"The charity, probably. My topic is how small organisations use volunteers, so I'd get access to real data. But the marketing one pays, and the charity doesn't. They'd only cover my travel.",
+"That's a real consideration. Could you do the charity placement part-time and keep your weekend job?",
+"Maybe. It's three days a week for ten weeks.",
+"Then I'd go with the charity. Experience that connects to your research is worth more than a few months' salary."],
+shown:"Placement options\nOption 1: marketing company, London – mainly {1} media; paid\nOption 2: charity, Leeds – fundraising, organising {2}, working with volunteers; unpaid, but {3} costs covered\nThe charity would give access to real {4} for the dissertation\nCharity hours: {5} days a week for 10 weeks\nTutor's advice: choose the {6}",
+ans:[['social'],['events'],['travel'],['data'],['3','three'],['charity']],
+keys:[["been offered", "獲得了"], ["placements", "實習機會"], ["can't decide", "無法決定"], ["more varied", "比較多樣"], ["dissertation", "學位論文"], ["access to", "能取得"], ["pays", "有薪水"], ["worth more than", "比…更值得"]],
+zh:['形容詞','名詞（複數）','費用類型','名詞','數字','選項']},
+{part:'p4', title:'講座：蜜蜂與農業', spoken:"Today I want to talk about honeybees and why they matter to agriculture. Bees pollinate around a third of the crops we eat, including apples, almonds, and most berries. In some regions, farmers now rent hives from beekeepers, because there aren't enough wild bees left. The decline has several causes. The most important is probably the loss of habitat, as hedges and wildflower meadows are replaced by single crops. Pesticides are a second factor; one group in particular affects the bees' memory, so they can't find their way back to the hive. And a parasite called the varroa mite weakens whole colonies. What can be done? Some cities have started planting wildflowers on roadsides, and in one study this doubled the number of bee species within three years. Farmers can also leave strips of land uncultivated at the edge of fields.",
+shown:"Honeybees and agriculture\nBees pollinate about a {1} of the crops we eat. Where there are not enough wild bees, farmers {2} hives from beekeepers. The decline is caused mainly by loss of {3}, by pesticides that damage the bees' {4}, and by a parasite. Planting wildflowers on roadsides doubled the number of bee species within {5} years. Farmers can also leave land uncultivated at the {6} of fields.",
+ans:[['third'],['rent'],['habitat'],['memory'],['3','three'],['edge','edges']],
+keys:[["pollinate", "授粉"], ["the crops we eat", "我們吃的作物"], ["beekeepers", "養蜂人"], ["The decline", "數量減少"], ["Pesticides", "農藥"], ["find their way back", "找到回家的路"], ["parasite", "寄生蟲"], ["uncultivated", "未耕作的"]],
+zh:['分數','動詞','名詞','名詞','數字','名詞']},
+{part:'p4', title:'講座：十九世紀倫敦的供水', spoken:"In the early nineteenth century, London's water came mainly from the river Thames, and it was often dirty, because the same river was used for sewage. Cholera killed tens of thousands of people in a series of epidemics. Most doctors believed the disease was spread by bad air, but a physician called John Snow suspected the water. In 1854 he mapped the deaths in one district and found they were clustered around a single pump in Broad Street. When the handle of the pump was removed, the outbreak stopped. His findings were not accepted immediately, but they eventually led to the building of a new sewer system, completed in 1875, which carried waste far downstream. The engineer responsible, Joseph Bazalgette, built the tunnels much larger than necessary, which is why they are still in use today.",
+shown:"London's water supply in the 19th century\nWater came from the Thames, which was also used for {1}. Most doctors blamed bad {2} for cholera, but John Snow mapped the deaths in {3} and traced them to a single {4} in Broad Street. A new sewer system was completed in {5}. Its engineer built the tunnels much larger than necessary, so they are still in {6} today.",
+ans:[['sewage'],['air'],['1854'],['pump'],['1875'],['use']],
+keys:[["Cholera", "霍亂"], ["epidemics", "流行病"], ["spread by", "經由…傳播"], ["suspected", "懷疑"], ["mapped the deaths", "把死亡案例畫在地圖上"], ["clustered around", "集中在…周圍"], ["the outbreak stopped", "疫情停止"], ["sewer system", "下水道系統"]],
+zh:['名詞','名詞','年份','物件','年份','名詞']},
+{part:'p4', title:'講座：睡眠與記憶', spoken:"Why do we sleep? One answer is memory. During the day, the brain takes in far more information than it can store, and sleep appears to be when it decides what to keep. In experiments, people who learn a list of words and then sleep remember about twenty per cent more than people who stay awake for the same length of time. The key stage seems to be deep sleep, in the first half of the night, when the brain replays the day's experiences. Lack of sleep has the opposite effect: after one night without sleep, the ability to form new memories drops by around forty per cent. This matters for students, who often sacrifice sleep before exams. Short naps can help – even twenty minutes improves recall – but they do not replace a full night. Interestingly, exercise during the day increases the amount of deep sleep, which may be one reason why active people tend to have better memories.",
+shown:"Sleep and memory\nSleep appears to be when the brain decides which information to {1}. People who sleep after learning a list of words remember about {2}% more. The key stage is {3} sleep, in the first half of the night. After one night without sleep, the ability to form new memories falls by about {4}%. A nap of 20 minutes helps, but does not replace a full night. Daytime {5} increases the amount of deep sleep.",
+ans:[['keep'],['20','twenty'],['deep'],['40','forty'],['exercise']],
+keys:[["a list of words", "一串單字"], ["stay awake", "保持清醒"], ["replays", "重播"], ["Lack of sleep", "睡眠不足"], ["form new memories", "形成新記憶"], ["sacrifice sleep", "犧牲睡眠"], ["naps", "小睡"], ["recall", "回憶"]],
+zh:['動詞','數字','形容詞','數字','名詞']},
+{part:'p4', title:'講座：塞車費個案', spoken:"Let's look at how one city dealt with traffic congestion. In 2003, drivers entering the centre on weekdays began paying a daily charge, initially five pounds. Within a year, the number of cars in the zone fell by eighteen per cent, and average speeds rose. The money raised, around a hundred million pounds a year, was spent on buses, which became more frequent and more reliable. There were side effects, though. Shops near the boundary of the zone reported fewer customers, and some traffic simply moved to the roads outside it. Over time, the benefits declined, partly because the space freed up was taken by roadworks and by delivery vans, whose numbers grew with online shopping. The lesson is that a charge works best when it is combined with other measures, such as cycle lanes and limits on parking.",
+shown:"Congestion charge – a case study\nFrom 2003, drivers entering the centre on weekdays paid a daily charge, at first £{1}. Within a year the number of cars in the zone fell by {2}%. The money raised was spent on {3}. However, shops near the {4} of the zone lost customers, and some traffic moved to roads outside. Later, the space freed up was taken by roadworks and {5} vans. A charge works best when combined with cycle lanes and limits on {6}.",
+ans:[['5','five'],['18','eighteen'],['buses'],['boundary'],['delivery'],['parking']],
+keys:[["traffic congestion", "交通壅塞"], ["daily charge", "每日收費"], ["average speeds", "平均車速"], ["The money raised", "收到的錢"], ["side effects", "副作用"], ["fewer customers", "較少顧客"], ["roadworks", "道路施工"], ["combined with", "與…搭配"]],
+zh:['金額','數字','名詞（複數）','名詞','名詞','名詞']},
+{part:'p4', title:'講座：皇帝企鵝', spoken:"Emperor penguins breed in the Antarctic winter, when temperatures fall below minus forty degrees. The female lays a single egg in May and then walks up to a hundred kilometres to the sea to feed, leaving the male to keep the egg warm on his feet for about two months. During this time he eats nothing and loses around half his body weight. The males huddle together in groups of several thousand, taking turns on the cold outside of the group. When the chicks hatch, the females return with food, and the males finally go to sea. Researchers now count the colonies from satellite images, by measuring the brown stains that the birds leave on the ice. This method found several colonies that were previously unknown, but it also shows that some have disappeared as the sea ice has become thinner.",
+shown:"Emperor penguins\nThe female lays one egg in {1} and walks up to {2} km to the sea. The male keeps the egg warm on his feet for about two months, eating nothing and losing about {3} his body weight. Males huddle in groups of several thousand. Researchers now count colonies from {4} images, by measuring the brown {5} the birds leave on the ice. Some colonies have disappeared as the sea ice has become {6}.",
+ans:[['May'],['100','a hundred','one hundred','hundred'],['half'],['satellite'],['stains'],['thinner']],
+keys:[["breed", "繁殖"], ["lays a single egg", "產一顆蛋"], ["keep the egg warm", "幫蛋保溫"], ["body weight", "體重"], ["huddle together", "擠在一起"], ["taking turns", "輪流"], ["chicks hatch", "小企鵝孵化"], ["colonies", "群落"]],
+zh:['月份','數字','分數','名詞','名詞（複數）','形容詞（比較級）']},
+{part:'p4', title:'講座：木造高樓', spoken:"Until recently, tall buildings were made of steel and concrete, but a new material is changing that: engineered timber. Thin layers of wood are glued together at right angles to make panels that are as strong as concrete but about a fifth of the weight. Because the panels are made in a factory, a building can go up in weeks rather than months, with far less noise on site. The environmental case is strong: producing a tonne of cement releases almost a tonne of carbon dioxide, whereas a tree absorbs carbon as it grows, and the timber stores it for the life of the building. The obvious worry is fire, but thick panels actually burn slowly, forming a layer of charcoal on the surface that protects the wood inside. The tallest timber building so far has twenty-five floors, and several cities have changed their regulations to allow more.",
+shown:"Engineered timber\nLayers of wood glued at right angles make panels as strong as concrete but about a {1} of the weight. Because panels are made in a {2}, buildings go up faster and with less noise. Producing cement releases carbon dioxide, whereas timber {3} carbon for the life of the building. Thick panels burn slowly, because a layer of {4} forms on the surface. The tallest timber building has {5} floors.",
+ans:[['fifth'],['factory'],['stores'],['charcoal'],['25','twenty-five','twenty five']],
+keys:[["steel and concrete", "鋼與混凝土"], ["engineered timber", "工程木材"], ["glued together", "黏合"], ["at right angles", "互相垂直"], ["panels", "板材"], ["absorbs carbon", "吸收碳"], ["burn slowly", "慢慢燃燒"], ["regulations", "法規"]],
+zh:['分數','場所','動詞','物質','數字']}
+];
+
+/* 雅思大作文 5 大類話題 500 個寫作短語（來源：使用者提供的 PDF；中文已轉為繁體） */
+window.PHR = {
+edu: {name:"教育", subs:[
+  {name:"學生學習&課堂", items:[["absorb knowledge efficiently", "高效吸收知識"], ["broaden one's horizons", "開闊眼界"], ["cultivate critical thinking", "培養批判性思維"], ["foster independent learning ability", "培養自主學習能力"], ["stimulate learning motivation", "激發學習動力"], ["relieve academic burden", "減輕學業負擔"], ["suffer from heavy coursework", "承受繁重課業"], ["grasp theoretical knowledge", "掌握理論知識"], ["combine theory with practice", "理論結合實踐"], ["lay a solid foundation for future career", "為職業打下堅實基礎"], ["tap one's potential", "挖掘個人潛能"], ["achieve academic excellence", "取得優異學業成績"], ["fall behind peers", "落後同齡人"], ["skip classes frequently", "頻繁逃課"], ["concentrate on academic tasks", "專注學習任務"], ["distract students from study", "分散學生學習注意力"], ["develop all-round abilities", "發展綜合能力"], ["receive well-rounded education", "接受全面均衡教育"], ["acquire practical skills", "習得實用技能"], ["master communication techniques", "掌握溝通技巧"]]},
+  {name:"線上教育&校園設施", items:[["online remote learning", "線上遠端學習"], ["virtual classroom resources", "虛擬課堂資源"], ["access educational materials online", "線上獲取學習資料"], ["break geographical restrictions", "打破地域限制"], ["save commuting time", "節省通勤時間"], ["lack face-to-face interaction", "缺乏面對面交流"], ["suffer poor self-discipline", "自律性差"], ["digital learning platform", "數字化學習平臺"], ["interactive teaching mode", "互動教學模式"], ["outdated teaching equipment", "老舊教學裝置"]]},
+  {name:"家庭教育&父母角色", items:[["shoulder parenting responsibilities", "承擔育兒責任"], ["set good role models for children", "為孩子樹立好榜樣"], ["supervise children's daily study", "監督孩子日常學習"], ["spoil children excessively", "過度溺愛孩子"], ["impose strict rules on youngsters", "對青少年施加嚴苛規矩"], ["bridge generation gap", "消除代溝"], ["enhance family bonding", "增進家庭親情"], ["ignore children's mental needs", "忽視孩子心理需求"], ["balance work and childcare", "平衡工作與育兒"], ["instill moral values in kids", "向孩子灌輸道德觀念"]]},
+  {name:"高等教育&留學", items:[["pursue further education", "深造"], ["obtain a bachelor's/master's degree", "獲取學士/碩士學位"], ["attend prestigious universities", "就讀知名學府"], ["compete fiercely for university admission", "激烈競爭大學錄取名額"], ["bear sky-high tuition fees", "承擔高昂學費"], ["gain international academic experience", "獲得國際學術經歷"], ["adapt to cross-cultural environment", "適應跨文化環境"], ["expand social network", "拓展人脈"], ["specialize in a specific major", "專攻某一專業"], ["drop out of university", "大學輟學"]]},
+  {name:"素質教育&德育", items:[["shape sound personalities", "塑造健全人格"], ["nurture good virtues", "培養優良品德"], ["strengthen sense of responsibility", "增強責任感"], ["build up self-confidence", "建立自信心"], ["overcome inferiority complex", "克服自卑心理"], ["participate in extracurricular activities", "參加課外活動"], ["take part in volunteer programs", "參與志願專案"], ["cultivate team spirit", "培養團隊合作精神"], ["learn cooperation and compromise", "學會合作與包容"], ["ignore moral education", "忽視德育教育"]]},
+  {name:"語言&藝術體育教育", items:[["improve linguistic competence", "提升語言能力"], ["appreciate classic artworks", "欣賞經典藝術作品"], ["enrich spiritual life", "豐富精神生活"], ["release study pressure through sports", "透過運動釋放學習壓力"], ["strengthen physical fitness", "增強身體素質"], ["relieve mental fatigue", "緩解精神疲勞"], ["develop artistic taste", "培養藝術審美"], ["master musical instruments", "掌握樂器演奏"], ["organize group sports matches", "組織團體體育賽事"], ["prioritize academic scores over arts", "重分數輕藝術"]]},
+  {name:"利弊類通用（教育）", items:[["bring numerous merits", "帶來諸多益處"], ["pose potential drawbacks", "存在潛在弊端"], ["exert far-reaching impacts on teenagers", "對青少年產生深遠影響"], ["exert positive/negative influences", "產生積極/消極影響"], ["strike a balance between A and B", "在A與B間取得平衡"], ["maximize the advantages", "最大化優勢"], ["minimize the risks", "降低風險"], ["be beneficial to mental development", "利於心智發展"], ["exert harmful effects on growth", "對成長造成不良影響"], ["pave the way for lifelong learning", "為終身學習鋪路"]]},
+  {name:"觀點連線（教育專用）", items:[["from an educational perspective", "從教育角度而言"], ["in terms of youth development", "就青少年發展而言"], ["the primary purpose of schooling", "學校教育的核心目的"], ["the core mission of educators", "教育者的核心使命"], ["meet students' diverse demands", "滿足學生多元需求"], ["cater to different learning styles", "適配不同學習方式"], ["standardised testing system", "標準化考試體系"], ["exam-oriented education", "應試教育"], ["quality-oriented education", "素質教育"], ["lifelong learning concept", "終身學習理念"]]},
+  {name:"青少年行為&心理", items:[["suffer academic anxiety", "遭受學業焦慮"], ["develop unhealthy competitive mindset", "形成病態競爭心態"], ["compare grades with classmates", "和同學攀比成績"], ["resist teachers' guidance", "抗拒老師引導"], ["develop independent judgment", "形成獨立判斷力"], ["receive professional psychological guidance", "接受專業心理疏導"], ["relieve teenage pressure", "緩解青少年壓力"], ["reduce the risk of juvenile delinquency", "降低青少年犯罪風險"], ["cultivate positive outlook on life", "樹立積極人生觀"], ["eliminate negative learning attitudes", "消除消極學習態度"]]},
+]},
+tech: {name:"科技", subs:[
+  {name:"網際網路&智慧手機", items:[["advance information technology", "發展資訊科技"], ["access infinite online information", "獲取海量網路資訊"], ["transmit information instantly", "即時傳遞資訊"], ["break time and space barriers", "打破時空壁壘"], ["facilitate daily communication", "便利日常溝通"], ["keep in constant contact with relatives", "和親友保持持續聯絡"], ["become addicted to smartphones", "沉迷手機"], ["indulge in social media", "沉溺社交媒體"], ["waste plenty of spare time", "浪費大量空閒時間"], ["suffer short-sightedness", "患上近視"], ["weaken face-to-face communication skills", "弱化線下溝通能力"], ["spread false information rapidly", "快速傳播虛假資訊"], ["protect personal privacy online", "保護線上個人隱私"], ["leak private data", "洩露私人資料"], ["cyber crime", "網路犯罪"], ["online fraud", "網路詐騙"], ["strengthen internet supervision", "加強網路監管"], ["filter harmful online content", "過濾不良網路內容"], ["online shopping platform", "網購平臺"], ["digital payment system", "電子支付系統"]]},
+  {name:"人工智慧&自動化", items:[["artificial intelligence technology", "人工智慧技術"], ["intelligent automation equipment", "智慧自動化裝置"], ["replace manual labour gradually", "逐步取代人工勞動力"], ["boost industrial productivity", "提升工業生產效率"], ["cut production costs", "降低生產成本"], ["eliminate traditional occupations", "淘汰傳統職業"], ["trigger unemployment crisis", "引發失業危機"], ["create new job vacancies", "創造新型就業崗位"], ["intelligent medical diagnosis", "智慧醫療診斷"], ["autonomous driving technology", "自動駕駛技術"], ["intelligent household appliances", "智慧家居裝置"], ["optimize work efficiency", "最佳化工作效率"], ["rely excessively on AI", "過度依賴人工智慧"], ["lack independent thinking capacity", "喪失獨立思考能力"], ["algorithm discrimination", "演算法歧視"], ["machine learning algorithm", "機器學習演算法"], ["digital transformation of industries", "產業數字化轉型"], ["high-tech innovation", "高科技創新"], ["technological breakthrough", "技術突破"], ["update technical equipment regularly", "定期更新技術裝置"]]},
+  {name:"太空科技&新能源科技", items:[["space exploration project", "太空探索專案"], ["launch spacecraft", "發射航天器"], ["explore unknown outer space", "探索未知外太空"], ["invest massive funds in aerospace", "為航空航天投入鉅額資金"], ["develop renewable energy technology", "研發可再生能源技術"], ["solar/wind power generation", "太陽能/風力發電"], ["reduce reliance on fossil fuels", "減少對化石燃料依賴"], ["green technological innovation", "綠色技術創新"], ["new energy vehicles", "新能源汽車"], ["low-carbon technical solutions", "低碳技術方案"]]},
+  {name:"科技對工作生活改變", items:[["revolutionise people's lifestyles", "徹底變革人們生活方式"], ["change traditional working patterns", "改變傳統工作模式"], ["work remotely at home", "居家遠端辦公"], ["hold online video conferences", "召開線上視訊會議"], ["reduce office commuting frequency", "減少辦公室通勤頻次"], ["blur the boundary between work and life", "模糊工作與生活界限"], ["extend working hours involuntarily", "被動延長工作時長"], ["digital office system", "數字化辦公系統"], ["intelligent logistics system", "智慧物流系統"], ["fast delivery service", "極速配送服務"]]},
+  {name:"醫療科技", items:[["advanced medical technology", "先進醫療技術"], ["precise surgical equipment", "精密手術裝置"], ["prolong human lifespan", "延長人類壽命"], ["cure previously incurable diseases", "治癒以往不治之症"], ["gene editing technology", "基因編輯技術"], ["medical big data", "醫療大資料"], ["online medical consultation", "線上問診"], ["remote medical treatment", "遠端診療"], ["reduce medical treatment costs", "降低就醫成本"], ["improve public medical service", "完善公共醫療服務"]]},
+  {name:"科技利弊通用表達", items:[["bring revolutionary changes", "帶來革命性變革"], ["accelerate social development", "加速社會發展"], ["generate unforeseen side effects", "產生難以預料的副作用"], ["bring convenience to the public", "給大眾帶來便利"], ["cause irreversible damage", "造成不可逆的損害"], ["strike a rational balance in tech application", "理性平衡科技運用"], ["harness technology properly", "合理利用科技"], ["curb the abuse of high-tech products", "遏制高科技產品濫用"], ["the rapid pace of technological advance", "飛速的技術發展速度"], ["keep pace with technological progress", "跟上技術發展步伐"]]},
+  {name:"科技監管&倫理", items:[["formulate relevant technological laws", "制定相關科技法規"], ["set strict technical standards", "設立嚴格技術標準"], ["supervise the development of new technology", "監管新技術發展"], ["solve ethical dilemmas brought by tech", "解決科技帶來的倫理困境"], ["regulate AI development", "規範人工智慧發展"], ["restrict uncontrolled technological research", "約束無節制技術研究"], ["balance technological progress and moral norms", "平衡技術進步與道德準則"], ["protect citizens from tech risks", "保護民眾免受科技風險"], ["enhance public media literacy", "提升公眾媒介素養"], ["raise awareness of digital safety", "提升數字安全意識"]]},
+  {name:"科技發展觀點拓展", items:[["in the digital era", "在數字化時代"], ["the information age", "資訊時代"], ["cutting-edge technology", "前沿尖端科技"], ["outdated traditional technology", "落後傳統技術"], ["technological advancement", "技術進步"], ["digital divide between regions", "地區間數字鴻溝"], ["bridge the digital divide", "消除數字鴻溝"], ["popularise digital devices", "普及數碼裝置"], ["promote technological popularisation", "推動科技普及"], ["satisfy people's growing material demands", "滿足人們日益增長的物質需求"]]},
+]},
+soc: {name:"社會", subs:[
+  {name:"城鄉發展&人口流動", items:[["rural and urban gap", "城鄉差距"], ["narrow the urban-rural divide", "縮小城鄉差距"], ["migrate from countryside to cities", "農村向城市遷移"], ["massive urbanisation process", "大規模城市化程序"], ["overcrowded metropolitan areas", "擁擠的大都市"], ["housing shortage crisis", "住房短缺危機"], ["soaring housing prices", "飆升的房價"], ["inadequate public infrastructure", "不完善公共基礎設施"], ["traffic congestion", "交通擁堵"], ["air pollution in downtown areas", "市中心空氣汙染"], ["vacant rural villages", "空心化鄉村"], ["stimulate rural economic growth", "帶動鄉村經濟發展"], ["balance urban and rural resources", "均衡城鄉資源分配"], ["relocate rural residents", "安置農村居民"], ["build new rural communities", "建設新農村社群"], ["city expansion", "城市擴張"], ["limited urban land resources", "有限城市土地資源"], ["migrant workers", "外來務工人員"], ["equal welfare treatment", "平等福利待遇"], ["integrate migrants into urban life", "讓外來人口融入城市生活"]]},
+  {name:"老齡化&人口結構", items:[["ageing population", "人口老齡化"], ["ageing society", "老齡化社會"], ["extend life expectancy", "人均壽命延長"], ["low birth rate", "低生育率"], ["shrinking young labour force", "青年勞動力萎縮"], ["heavy pension burden", "沉重養老負擔"], ["perfect elderly care system", "完善養老體系"], ["community nursing service", "社群養老服務"], ["professional nursing home", "專業養老院"], ["support elderly family members", "贍養家中老人"], ["empty-nest elderly", "空巢老人"], ["suffer loneliness and depression", "承受孤獨抑鬱"], ["offer spiritual comfort to seniors", "給予老人精神慰藉"], ["encourage fertility", "鼓勵生育"], ["release supportive birth policies", "推出生育扶持政策"], ["relieve childcare pressure", "減輕育兒壓力"], ["labour shortage", "勞動力短缺"], ["ageing workforce", "勞動力老齡化"], ["medical resources for the elderly", "老年人醫療資源"], ["improve pension benefits", "提升養老金福利"]]},
+  {name:"工作就業&職場", items:[["intense job competition", "激烈求職競爭"], ["severe employment pressure", "嚴峻就業壓力"], ["expand job markets", "拓寬就業市場"], ["create more employment opportunities", "創造更多就業機會"], ["unstable temporary jobs", "不穩定臨時工作"], ["decent full-time careers", "穩定全職工作"], ["pursue career development", "追求職業發展"], ["achieve career success", "獲得事業成功"], ["suffer work burnout", "職場倦怠"], ["excessive overtime work", "過度加班"], ["imbalance between work and life", "工作生活失衡"], ["flexible working schedule", "彈性工作制"], ["eliminate workplace discrimination", "消除職場歧視"], ["equal pay for equal work", "同工同酬"], ["gender prejudice in recruitment", "招聘中的性別偏見"], ["laid-off workers", "下崗失業人員"], ["vocational training courses", "職業培訓課程"], ["upgrade personal professional skills", "提升個人專業技能"], ["freelance workers", "自由職業者"], ["gig economy", "零工經濟"]]},
+  {name:"家庭結構&單身/晚婚", items:[["nuclear family", "核心小家庭"], ["extended family", "多代同堂大家庭"], ["delayed marriage age", "晚婚趨勢"], ["rising single population", "單身人口增加"], ["choose to remain single voluntarily", "自願選擇單身"], ["reduce family size", "家庭規模縮小"], ["weaken kinship ties", "親屬關係淡化"], ["strengthen individual awareness", "個人意識增強"], ["independent lifestyle", "獨立生活方式"], ["bear heavy financial burden of marriage", "承擔高額結婚經濟壓力"]]},
+  {name:"犯罪&社會治安", items:[["rising crime rate", "犯罪率上升"], ["violent crimes", "暴力犯罪"], ["minor offences", "輕微違法行為"], ["juvenile delinquency", "青少年犯罪"], ["lack parental supervision", "缺乏家長監管"], ["release prisoners back into society", "刑滿釋放人員重返社會"], ["provide rehabilitation training", "提供改造培訓"], ["impose severe punishment", "實施嚴厲處罰"], ["preventive crime measures", "犯罪預防措施"], ["strengthen community security", "加強社群治安"], ["install surveillance cameras", "安裝監控攝像頭"], ["improve citizens' legal awareness", "提升公民法律意識"], ["root out the cause of crimes", "根除犯罪根源"], ["reduce social inequality", "減少社會不公"], ["unfair wealth distribution", "財富分配不均"]]},
+  {name:"社會公平&貧富差距", items:[["widening gap between rich and poor", "不斷擴大貧富差距"], ["extreme wealth disparity", "極端貧富分化"], ["accumulate massive wealth", "積累鉅額財富"], ["live under poverty line", "生活在貧困線以下"], ["distribute social resources fairly", "公平分配社會資源"], ["narrow wealth inequality", "縮小財富不均"], ["social welfare system", "社會福利體系"], ["charity donation", "慈善捐贈"], ["help disadvantaged groups", "幫扶弱勢群體"], ["vulnerable social groups", "社會弱勢群體"]]},
+  {name:"社會通用觀點短語", items:[["maintain social stability", "維護社會穩定"], ["promote social harmony", "促進社會和諧"], ["trigger social conflicts", "引發社會矛盾"], ["alleviate social contradictions", "緩解社會矛盾"], ["safeguard the interests of all citizens", "保障全體公民利益"]]},
+]},
+env: {name:"環境", subs:[
+  {name:"汙染問題（大氣/水/土壤/噪音）", items:[["environmental contamination", "環境汙染"], ["industrial waste gas", "工業廢氣"], ["vehicle exhaust emissions", "機動車尾氣排放"], ["severe air smog", "嚴重霧霾"], ["toxic chemical pollutants", "有毒化學汙染物"], ["discharge sewage randomly", "隨意排放汙水"], ["pollute river and ocean resources", "汙染河湖海洋資源"], ["plastic waste pollution", "塑膠垃圾汙染"], ["white pollution", "白色汙染"], ["soil degradation", "土壤退化"], ["excessive pesticide use", "過度使用農藥"], ["noise pollution from construction", "施工噪音汙染"], ["harm residents' physical health", "危害居民身體健康"], ["trigger respiratory diseases", "引發呼吸道疾病"], ["contaminate underground water", "汙染地下水"], ["toxic waste dumping", "有毒垃圾傾倒"], ["purify polluted water bodies", "淨化受汙染水體"], ["cut harmful gas emissions", "減少有害氣體排放"], ["exhaust fume treatment equipment", "廢氣處理裝置"], ["classify domestic garbage", "生活垃圾分類"]]},
+  {name:"全球變暖&氣候危機", items:[["global warming", "全球變暖"], ["greenhouse gas emissions", "溫室氣體排放"], ["carbon dioxide emission", "二氧化碳排放"], ["carbon footprint", "碳足跡"], ["accelerate ice sheet melting", "加速冰川融化"], ["rising sea levels", "海平面上升"], ["extreme weather conditions", "極端天氣"], ["frequent natural disasters", "頻發自然災害"], ["drought and flood disasters", "旱澇災害"], ["climate change crisis", "氣候變化危機"], ["low-carbon lifestyle", "低碳生活方式"], ["carbon neutrality target", "碳中和目標"], ["restrict carbon emission intensity", "限制碳排放強度"], ["reduce energy consumption", "降低能源消耗"], ["curb global temperature rise", "遏制氣溫上升"]]},
+  {name:"動植物保護&生物多樣性", items:[["loss of biodiversity", "生物多樣性銳減"], ["endangered wild species", "瀕危野生物種"], ["rare wild animals and plants", "珍稀野生動植物"], ["illegal wildlife hunting", "非法捕獵野生動物"], ["overfishing in oceans", "海洋過度捕撈"], ["destroy natural habitats", "破壞自然棲息地"], ["deforestation", "濫砍濫伐森林"], ["shrink forest coverage", "森林覆蓋率下降"], ["build natural reserves", "建立自然保護區"], ["ban illegal animal trade", "禁止非法動物交易"], ["restore damaged ecosystems", "修復受損生態系統"], ["maintain ecological balance", "維持生態平衡"], ["break ecological chain", "破壞生態鏈"], ["exotic invasive species", "外來入侵物種"], ["protect native wildlife", "保護本土野生物種"]]},
+  {name:"資源枯竭&節約資源", items:[["non-renewable fossil fuels", "不可再生化石能源"], ["resource depletion", "資源枯竭"], ["scarce mineral resources", "稀缺礦產資源"], ["fresh water shortage", "淡水資源短缺"], ["waste water and electricity resources", "浪費水電資源"], ["exploit mineral resources excessively", "過度開採礦產"], ["develop clean renewable energy", "開發清潔可再生能源"], ["solar, wind and tidal energy", "太陽能、風能、潮汐能"], ["recycle waste materials", "回收廢棄物"], ["reuse recyclable rubbish", "重複利用可回收垃圾"]]},
+  {name:"城市環保&綠色生活", items:[["green urban construction", "綠色城市建設"], ["expand urban green belts", "擴建城市綠化帶"], ["plant trees on a large scale", "大規模植樹造林"], ["develop public transport systems", "完善公共交通系統"], ["encourage cycling and walking", "鼓勵騎行步行"], ["limit private car use", "限制私家車使用"], ["eco-friendly products", "環保產品"], ["disposable plastic products", "一次性塑膠製品"], ["biodegradable packaging", "可降解包裝"], ["raise citizens' environmental awareness", "提升民眾環保意識"]]},
+  {name:"企業&政府環保舉措", items:[["implement strict environmental laws", "實施嚴苛環保法規"], ["impose heavy fines on polluting factories", "對汙染工廠處以高額罰款"], ["supervise industrial production pollution", "監管工業生產汙染"], ["invest funds in environmental governance", "投入資金治理環境"], ["subsidise green manufacturing", "補貼綠色製造業"], ["force enterprises to reduce pollution", "強制企業減排治汙"], ["environmental inspection mechanism", "環保督查機制"], ["launch environmental protection campaigns", "發起環保宣傳活動"], ["popularise environmental protection knowledge", "普及環保知識"], ["penalise enterprises with excessive emissions", "處罰超標排放企業"]]},
+  {name:"環保利弊&個人責任", items:[["shoulder environmental protection responsibility", "承擔環保責任"], ["make contributions to ecological protection", "為生態保護做貢獻"], ["ignore the long-term ecological damage", "忽視長期生態破壞"], ["sacrifice environment for short-term profits", "犧牲環境換取短期利益"], ["achieve sustainable development", "實現可持續發展"], ["balance economic growth and environmental protection", "平衡經濟發展與環境保護"], ["irreversible ecological damage", "不可逆生態破壞"], ["restore degraded environment", "修復惡化環境"], ["reduce the burden on natural ecosystems", "減輕自然生態系統負擔"], ["adopt environmentally friendly habits", "養成環保生活習慣"]]},
+  {name:"環保話題拓展高分搭配", items:[["sustainable exploitation of natural resources", "自然資源可持續開採"], ["circular economy model", "迴圈經濟模式"], ["eco-tourism industry", "生態旅遊業"], ["environmental carrying capacity", "環境承載力"], ["ecological degradation", "生態惡化"], ["carbon emission reduction policy", "減排政策"], ["green low-carbon industry", "綠色低碳產業"], ["pollution control technology", "汙染治理技術"], ["environmental sustainability", "環境可持續性"], ["preserve natural heritage", "保護自然遺產"]]},
+]},
+gov: {name:"政府經濟文化", subs:[
+  {name:"政府職能&財政投入", items:[["national government authorities", "國家政府部門"], ["allocate government budget", "分配政府財政預算"], ["invest public funds in public services", "投入公款建設公共服務"], ["increase financial input in education/medical care", "加大教育/醫療財政投入"], ["cut expenditure on military weapons", "削減軍備開支"], ["formulate national policies", "制定國家政策"], ["implement effective regulatory measures", "實施有效管控措施"], ["safeguard public interests", "維護公眾利益"], ["respond to citizens' reasonable demands", "回應民眾合理訴求"], ["provide free public services", "提供免費公共服務"], ["build public medical institutions", "建設公立醫療機構"], ["construct public transport infrastructure", "修建公共交通基建"], ["collect reasonable taxes", "徵收合理稅收"], ["redistribute tax revenues fairly", "公平重新分配稅收收入"], ["supervise tax collection", "監管稅收徵收"], ["reduce tax burden on ordinary residents", "減輕普通居民稅務負擔"], ["financial deficit", "財政赤字"], ["balanced fiscal budget", "平衡財政預算"], ["subsidise low-income families", "補貼低收入家庭"], ["offer welfare allowances", "發放福利補貼"]]},
+  {name:"經濟發展&國際貿易", items:[["boost domestic economic growth", "推動國內經濟增長"], ["stimulate domestic consumption", "拉動內需消費"], ["expand international trade cooperation", "拓展國際貿易合作"], ["import and export commodities", "進出口商品"], ["eliminate trade barriers", "消除貿易壁壘"], ["global economic integration", "全球經濟一體化"], ["cross-border commercial exchanges", "跨境商業往來"], ["small and medium-sized enterprises (SMEs)", "中小企業"], ["support local domestic industries", "扶持本土本土產業"], ["develop emerging industries", "發展新興產業"], ["traditional manufacturing industry", "傳統製造業"], ["service industry", "服務業"], ["tourist economy", "旅遊經濟"], ["stagnant economic development", "經濟發展停滯"], ["economic recession", "經濟衰退"], ["create economic profits", "創造經濟收益"], ["promote regional economic cooperation", "促進區域經濟合作"], ["attract foreign investment", "吸引外資"], ["overseas investment", "海外投資"], ["stabilize market prices", "穩定市場物價"]]},
+  {name:"文化保護&傳統文化", items:[["inherit traditional culture", "傳承傳統文化"], ["preserve cultural heritage", "保護文化遺產"], ["tangible cultural relics", "物質文化遺產"], ["intangible cultural heritage", "非物質文化遺產"], ["ancient historic sites", "歷史古蹟"], ["repair and renovate old cultural buildings", "修繕古建築"], ["pass down folk customs", "傳承民俗風情"], ["traditional handicrafts", "傳統手工藝品"], ["local distinctive culture", "地方特色文化"], ["cultural identity", "文化認同感"], ["lose cultural roots", "丟失文化根基"], ["cultural assimilation", "文化同化"], ["cultural diversity", "文化多樣性"], ["maintain multicultural environment", "維持多元文化環境"], ["absorb outstanding foreign cultures", "吸收優秀外來文化"], ["blindly follow overseas cultural trends", "盲目追捧海外潮流文化"], ["cultural invasion", "文化入侵"], ["hold cultural festivals", "舉辦文化節"], ["promote cultural exchange activities", "開展文化交流活動"], ["spread national culture worldwide", "向世界傳播本國文化"]]},
+  {name:"旅遊&跨文化交流", items:[["international tourism industry", "國際旅遊業"], ["inbound and outbound tourists", "入境、出境遊客"], ["boost local tourist revenue", "提升地方旅遊收入"], ["stimulate local catering and retail trade", "帶動當地餐飲零售業"], ["damage local cultural relics", "破壞當地文物古蹟"], ["disturb residents' quiet daily life", "打擾居民平靜日常生活"], ["respect local customs and traditions", "尊重當地風俗傳統"], ["cross-cultural communication barriers", "跨文化溝通障礙"], ["eliminate cultural misunderstandings", "消除文化誤解"], ["broaden tourists' cultural vision", "拓寬遊客文化視野"]]},
+  {name:"公共醫療&社會福利政策", items:[["universal medical care system", "全民醫療保障體系"], ["affordable medical treatment", "平價就醫服務"], ["high medical expenses", "高昂醫療開銷"], ["medical resource imbalance", "醫療資源分配不均"], ["allocate medical resources rationally", "合理分配醫療資源"], ["build community medical stations", "建設社群衛生站"], ["free vaccination services", "免費疫苗接種服務"], ["disability welfare support", "殘疾人福利保障"], ["social relief fund", "社會救助基金"], ["guarantee basic living standards", "保障基本生活水平"]]},
+  {name:"體育&藝術扶持政策", items:[["fund professional sports events", "資助專業體育賽事"], ["construct public stadiums and gyms", "修建公共運動場館"], ["support artistic creation", "扶持藝術創作"], ["build public museums and galleries", "建設公立博物館美術館"], ["popularise mass sports", "普及大眾體育運動"], ["cultivate professional athletes", "培養專業運動員"], ["develop cultural and creative industries", "發展文創產業"], ["cultural consumption market", "文化消費市場"], ["enrich citizens' spare-time entertainment", "豐富民眾業餘文娛生活"], ["improve public cultural facilities", "完善公共文化設施"]]},
+  {name:"全球化利弊表達", items:[["deepen global cooperation", "深化全球合作"], ["accelerate cultural and economic exchanges", "加速文化經濟交流"], ["narrow gaps between different nations", "縮小國家間差距"], ["widen wealth gaps between developed and developing countries", "拉大已開發國家與開發中國家貧富差距"], ["weaken local traditional industries", "衝擊本土傳統產業"], ["share global advanced resources", "共享全球優質資源"], ["global cultural homogenisation", "全球文化趨同"], ["retain unique national characteristics", "保留獨特民族特色"], ["strengthen international mutual understanding", "增進國際相互理解"], ["reduce international conflicts", "減少國際衝突"]]},
+]},
+};
+
+/* 拼名題用的姓氏（雅思 Part 1 常見英式姓） */
+window.NAMES = ['Thompson','Mackenzie','Hargreaves','Bradshaw','Whitmore','Carlisle','Beaumont','Fitzgerald','Kavanagh','Pemberton','Greenwood','Sheridan','Lancaster','Holloway','Ashworth','Burrows','Ainsworth','Worthington','Drummond','Fairbanks','Newbury','Redfern','Castleton','Wyndham','Harrington','Buckley','Stanford','Radcliffe'];
+</script>
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+const EXAM_DATE = '2026-11-17';
+const ROUND = 10;
+
+/* ---------- 題庫整理 ---------- */
+const BANKS = {};
+for (const k in BANK_RAW){
+  const [name, raw] = BANK_RAW[k];
+  BANKS[k] = { name, words: raw.trim().split('\n').filter(Boolean).map(line=>{
+    const [en, zh] = line.split('|');
+    const forms = en.split('/').map(s=>s.trim());
+    return { type:'word', en:forms[0], forms, zh:(zh||'').trim(), bank:k, key:keyOf(forms[0]) };
+  })};
+}
+function keyOf(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'') || 'x'; }
+const ALL_WORDS = [].concat(...Object.values(BANKS).map(b=>b.words));
+PASS.forEach((p,i)=>{ p.id=i; });
+const YG_ACCENTS = [['uk','英國'],['us','美國'],['aus','澳洲'],['nz','紐西蘭'],['ie','愛爾蘭']];
+const TTS_LANGS = [['en-GB','英國'],['en-AU','澳洲'],['en-US','美國'],['en-NZ','紐西蘭'],['en-IE','愛爾蘭'],['en-CA','加拿大']];
+function ygUrl(word){ const a = pick(YG_ACCENTS); return ['https://youglish.com/pronounce/'+encodeURIComponent(word.trim().replace(/\s+/g,'_'))+'/english/'+a[0], a[1]]; }
+function ygLink(word){ const u = ygUrl(word); return '<a class="yg" href="'+u[0]+'" target="_blank" rel="noopener">YouGlish・'+u[1]+'</a>'; }
+const WORD_BY_KEY = {}; ALL_WORDS.forEach(w=>{ if(!WORD_BY_KEY[w.key]) WORD_BY_KEY[w.key]=w; });
+
+/* ---------- 狀態 ---------- */
+const S = { mode:'pass', bank:'p1', phrCat:'edu', accent:'random', curAccent:'en-GB', rate:0.95, round:null, audioUnlocked:false, ttsOk:null, recentPass:[] };
+const Store = { kind:'memory', db:null, words:{}, today:null, summary:{recent:[], total:0, correct:0}, dirtyWords:new Set(), dirtyMeta:false, timer:null, failed:false };
+const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const TODAY = todayStr();
+function newDay(){ return { date:TODAY, answered:0, correct:0, modes:{} }; }
+
+/* ---------- 工具 ---------- */
+const rnd = n => Math.floor(Math.random()*n);
+const pick = a => a[rnd(a.length)];
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’‘]/g,"'").replace(/\s+/g,' ').trim(); }
+function tight(s){ return norm(s).replace(/[-\s'.]/g,''); }
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function bandOf(correct40){
+  const c = correct40;
+  if (c>=39) return 9; if (c>=37) return 8.5; if (c>=35) return 8; if (c>=32) return 7.5; if (c>=30) return 7;
+  if (c>=26) return 6.5; if (c>=23) return 6; if (c>=18) return 5.5; if (c>=16) return 5; if (c>=13) return 4.5;
+  if (c>=10) return 4; if (c>=6) return 3.5; return 3;
+}
+
+/* ---------- 數字題 ---------- */
+const ONES=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'];
+const TENS=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const ORD={1:'first',2:'second',3:'third',4:'fourth',5:'fifth',6:'sixth',7:'seventh',8:'eighth',9:'ninth',10:'tenth',11:'eleventh',12:'twelfth',13:'thirteenth',14:'fourteenth',15:'fifteenth',16:'sixteenth',17:'seventeenth',18:'eighteenth',19:'nineteenth',20:'twentieth',21:'twenty-first',22:'twenty-second',23:'twenty-third',24:'twenty-fourth',25:'twenty-fifth',26:'twenty-sixth',27:'twenty-seventh',28:'twenty-eighth'};
+function numWords(n){
+  if(n<20) return ONES[n];
+  if(n<100) return TENS[Math.floor(n/10)]+(n%10?'-'+ONES[n%10]:'');
+  if(n<1000){ const r=n%100; return ONES[Math.floor(n/100)]+' hundred'+(r?' and '+numWords(r):''); }
+  const r=n%1000; return numWords(Math.floor(n/1000))+' thousand'+(r?(r<100?' and ':' ')+numWords(r):'');
+}
+const digitsOnly = s => (s||'').replace(/\D/g,'');
+function numItem(){
+  const kind = pick(['teen','teen','phone','price','price','time','time','date','date','postcode','name','name','percent']);
+  let it = { type:'num', kind, label:'', spoken:'', expected:'', hint:'', check:null };
+  if (kind==='teen'){
+    const style = rnd(3);
+    let n;
+    if (style===0){ n = pick([13,14,15,16,17,18,19,30,40,50,60,70,80,90]); it.spoken = numWords(n); }
+    else if (style===1){ n = pick([1100,1200,1500,1800,2300,2500,4500]); it.spoken = numWords(n/100)+' hundred'; }
+    else { n = 100*(rnd(90)+10) + pick([0,0,50,25,75,20,30,15,45,60]); it.spoken = numWords(n); }
+    it.label='數字'; it.expected=String(n); it.hint=it.spoken;
+    it.check = a => parseInt(digitsOnly(a),10)===n;
+  } else if (kind==='percent'){
+    const n = pick([13,15,18,19,30,40,45,50,60,70,75,80,85,90]);
+    it.label='百分比'; it.spoken=numWords(n)+' per cent'; it.expected=n+'%'; it.hint=it.spoken;
+    it.check = a => parseInt(digitsOnly(a),10)===n;
+  } else if (kind==='phone'){
+    const d=['0', pick(['7','2','1'])]; while(d.length<11){ const last=d[d.length-1]; let x=String(rnd(10)); if(rnd(4)===0) x=last; d.push(x); }
+    const parts=[]; for(let i=0;i<d.length;i++){ if(d[i]===d[i+1]){ parts.push('double '+(d[i]==='0'?'oh':ONES[+d[i]])); i++; } else parts.push(d[i]==='0'?'oh':ONES[+d[i]]); if(i===4||i===7) parts.push(','); }
+    it.label='電話號碼'; it.spoken=parts.join(' ').replace(/ ,/g,','); it.expected=d.slice(0,5).join('')+' '+d.slice(5,8).join('')+' '+d.slice(8).join(''); it.hint=it.spoken;
+    const digits=d.join(''); it.check = a => digitsOnly(a)===digits;
+  } else if (kind==='price'){
+    const cur = pick(['pound','dollar']); const sym = cur==='pound'?'£':'$';
+    const a = rnd(190)+1; const p = pick([0,0,50,99,25,75,20,30,40,60,80,95,45]);
+    const unit = a===1?cur:cur+'s';
+    if (p===0) it.spoken = numWords(a)+' '+unit;
+    else it.spoken = (a>=10 && rnd(2)) ? numWords(a)+' '+numWords(p) : numWords(a)+' '+unit+' '+numWords(p);
+    const val = a + p/100;
+    it.label='價格（'+sym+'）'; it.expected = sym + (p? val.toFixed(2) : String(a)); it.hint=it.spoken;
+    it.check = x => { const v = parseFloat((x||'').replace(/[£$€,\s]/g,'').replace(/[^0-9.]/g,'')); return Math.abs(v-val)<0.005; };
+  } else if (kind==='time'){
+    const h = rnd(12)+1; const m = pick([0,15,30,45,5,10,20,25,35,40,50,55]);
+    let spoken; const hn = h===12?1:h+1;
+    if (m===0) spoken = numWords(h)+" o'clock";
+    else if (m===15) spoken = 'quarter past '+numWords(h);
+    else if (m===30) spoken = 'half past '+numWords(h);
+    else if (m===45) spoken = 'quarter to '+numWords(hn);
+    else if (m<30) spoken = numWords(m)+' past '+numWords(h);
+    else spoken = numWords(60-m)+' to '+numWords(hn);
+    const hh = h, mm = m;
+    it.label='時間'; it.spoken=spoken; it.expected = hh+':'+String(mm).padStart(2,'0'); it.hint=spoken;
+    const target = hh*100+mm;
+    it.check = x => { const dd = digitsOnly(x); if(!dd) return false; const v=parseInt(dd,10); return v===target || v===target+1200 || (hh===12 && v===mm); };
+  } else if (kind==='date'){
+    const d = rnd(28)+1; const mo = rnd(12);
+    it.label='日期'; it.spoken = rnd(2) ? 'the '+ORD[d]+' of '+MONTHS[mo] : MONTHS[mo]+' the '+ORD[d];
+    it.expected = d+' '+MONTHS[mo]; it.hint = it.spoken;
+    it.check = x => {
+      const s = norm(x).replace(/(\d)(st|nd|rd|th)\b/g,'$1');
+      const nums = (s.match(/\d+/g)||[]).map(Number);
+      const mname = MONTHS.findIndex(M => s.includes(M.toLowerCase().slice(0,3)));
+      if (mname>=0) return mname===mo && nums.includes(d);
+      return nums.length>=2 && ((nums[0]===d && nums[1]===mo+1) || (nums[0]===mo+1 && nums[1]===d));
+    };
+  } else if (kind==='postcode'){
+    const L='ABCDEFGHJKLMNPRSTUWXYZ'; const l=()=>L[rnd(L.length)];
+    const code = l()+l()+(rnd(9)+1)+' '+(rnd(9)+1)+l()+l();
+    it.label='郵遞區號（英國格式，例如 BN2 4GH）'; it.spoken = code.replace(' ','').split('').join(', ')+'.'; it.expected=code; it.hint=it.spoken;
+    const t = code.replace(/\s/g,'').toLowerCase(); it.check = x => (x||'').replace(/\s/g,'').toLowerCase()===t;
+  } else {
+    const name = pick(NAMES);
+    it.label='拼寫姓氏'; it.spoken = 'The surname is '+name+'. That is '+name.toUpperCase().split('').join(', ')+'.'; it.expected=name; it.hint='…'+name.toUpperCase().split('').join(' ');
+    it.check = x => norm(x)===name.toLowerCase();
+  }
+  return it;
+}
+
+/* ---------- 同義替換題 ---------- */
+function synItem(){
+  const idx = rnd(SYN.length); const [head, list] = SYN[idx];
+  const dir = rnd(2) ? 'a' : 'b';
+  const others = SYN.filter((_,i)=>i!==idx);
+  let it = { type:'syn', dir };
+  if (dir==='a'){
+    const answer = pick(list);
+    const pool = shuffle(others).map(p=>pick(p[1])).filter(x=>!list.includes(x)).slice(0,3);
+    it.prompt = head; it.spokenText = head; it.answer = answer; it.options = shuffle([answer, ...pool]);
+    it.q = '題目寫 <span class="en">'+esc(head)+'</span>，錄音可能怎麼說？';
+  } else {
+    const spoken = pick(list);
+    const pool = shuffle(others).map(p=>p[0]).slice(0,3);
+    it.prompt = spoken; it.spokenText = spoken; it.answer = head; it.options = shuffle([head, ...pool]);
+    it.q = '錄音說 <span class="en">'+esc(spoken)+'</span>，對應題目的哪個字？';
+  }
+  it.expected = it.answer;
+  return it;
+}
+
+/* ---------- 單字題 ---------- */
+function wordPool(){
+  if (S.mode==='review') return reviewPool();
+  return S.bank==='all' ? ALL_WORDS : BANKS[S.bank].words;
+}
+function reviewPool(){
+  return Object.values(Store.words).filter(w=>w.wrong>0 && w.en)
+    .sort((a,b)=>(b.wrong-b.right)-(a.wrong-a.right) || (b.last||'').localeCompare(a.last||''))
+    .map(w=>WORD_BY_KEY[w.key] || { type:'word', en:w.en, forms:[w.en], zh:w.zh||'', bank:w.bank||'p1', key:w.key });
+}
+/* ---------- 寫作短語 ---------- */
+const PHR_ALL = [];
+Object.keys(PHR).forEach(k=>PHR[k].subs.forEach(s=>s.items.forEach(([en,zh])=>PHR_ALL.push({ cat:k, sub:s.name, en, zh, key:'phr-'+keyOf(en) }))));
+const STOP = new Set(['a','an','the','of','in','on','at','to','for','with','and','or','from','into','between','by','as','over','through','under','up','out','be','is','than',"one's",'per','via','vs','its','their','own','onto','off']);
+function spellVariants(w){
+  const v = new Set([w]); const l = w.toLowerCase();
+  const swap = (re, to)=>{ if (re.test(l)) v.add(l.replace(re, to)); };
+  swap(/ise$/,'ize'); swap(/ize$/,'ise'); swap(/ised$/,'ized'); swap(/ized$/,'ised'); swap(/ising$/,'izing'); swap(/izing$/,'ising');
+  swap(/isation$/,'ization'); swap(/ization$/,'isation'); swap(/yse$/,'yze'); swap(/yze$/,'yse'); swap(/our$/,'or'); swap(/ours$/,'ors');
+  swap(/ourhood$/,'orhood'); swap(/lling$/,'ling'); swap(/lled$/,'led'); swap(/ence$/,'ense'); swap(/ogue$/,'og'); swap(/re$/,'er'); swap(/mme$/,'m');
+  return [...v];
+}
+function phrItem(x){
+  const words = x.en.split(/\s+/);
+  const clean = w => w.replace(/[(),.]/g,'');
+  const cand = words.map((w,i)=>({w:clean(w), i})).filter(o=>/^[A-Za-z][A-Za-z'\-]*$/.test(o.w) && !STOP.has(o.w.toLowerCase()) && o.w.replace(/[^A-Za-z]/g,'').length>=3);
+  const o = cand.length ? (Math.random()<0.5 ? cand[0] : pick(cand)) : { w:clean(words[0]), i:0 };
+  return { type:'phr', en:x.en, zh:x.zh, sub:x.sub, cat:x.cat, words, bi:o.i, answer:o.w, forms:spellVariants(o.w), key:x.key, bank:'phr' };
+}
+function drawPhr(n){
+  const pool = S.phrCat==='all' ? PHR_ALL : PHR_ALL.filter(x=>x.cat===S.phrCat);
+  const weighted = pool.map(x=>{ const r=Store.words[x.key]; return {x, wt: 1 + (r? Math.max(0, r.wrong*2 - r.right) : 0)}; });
+  const out=[]; const used=new Set();
+  while (out.length<n && used.size<pool.length){
+    let total=0; weighted.forEach(y=>{ if(!used.has(y.x.key)) total+=y.wt; });
+    let t=Math.random()*total;
+    for (const y of weighted){ if(used.has(y.x.key)) continue; t-=y.wt; if(t<=0){ used.add(y.x.key); out.push(phrItem(y.x)); break; } }
+  }
+  return out;
+}
+function phrBlankHtml(it, reveal){
+  return it.words.map((w,i)=> i===it.bi ? (reveal ? '<b>'+esc(w)+'</b>' : w.replace(/^[(]?[A-Za-z'\-]+/, m=>'<span class="blank" aria-label="空格"></span>')) : esc(w)).join(' ');
+}
+function renderPhrList(){
+  const cats = S.phrCat==='all' ? Object.keys(PHR) : [S.phrCat];
+  let n=0, html='';
+  cats.forEach(k=>{ PHR[k].subs.forEach(s=>{ html += '<h4>'+esc(PHR[k].name)+' · '+esc(s.name)+'</h4><ol>'+s.items.map(([en,zh])=>{ n++; return '<li>'+esc(en)+'<span>'+esc(zh)+'</span></li>'; }).join('')+'</ol>'; }); });
+  $('phrBody').innerHTML = html; $('phrSummary').textContent = '本類短語表（'+n+' 組，可先讀再測）';
+}
+
+function drawPassage(){
+  const part = (S.bank==='all'||S.bank==='spell') ? null : S.bank;
+  const pool = PASS.filter(p=>!part || p.part===part);
+  const fresh = pool.filter(p=>!S.recentPass.includes(p.id));
+  const use = fresh.length ? fresh : pool;
+  const weighted = use.map(p=>{ let wt=1; p.ans.forEach(a=>{ const r=Store.words[keyOf(a[0])]; if(r) wt += Math.max(0, r.wrong*2 - r.right); }); return {p, wt}; });
+  let total = weighted.reduce((s,x)=>s+x.wt,0), t = Math.random()*total, chosen = weighted[0].p;
+  for (const x of weighted){ t-=x.wt; if(t<=0){ chosen=x.p; break; } }
+  S.recentPass = S.recentPass.concat(chosen.id).slice(-Math.min(6, Math.max(0,pool.length-1)));
+  return chosen;
+}
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+function transcriptHtml(p, reveal){
+  const turns = Array.isArray(p.spoken) ? p.spoken : [p.spoken];
+  const full = turns.join('\n');
+  let html = esc(full);
+  if (reveal){
+    let pos = 0;
+    p.ans.forEach(forms=>{
+      for (const f of forms){
+        const re = new RegExp('\\b'+reEsc(esc(f))+'(?:s|es)?\\b','ig');
+        re.lastIndex = pos; let m = re.exec(html);
+        if (!m){ re.lastIndex = 0; m = re.exec(html); }
+        if (m){ const s = m.index, e = s + m[0].length; html = html.slice(0,s)+'<b>'+html.slice(s,e)+'</b>'+html.slice(e); pos = e + 7; break; }
+      }
+    });
+  }
+  if (reveal && p.keys && p.keys.length){
+    // underline the context keywords, only inside text (never inside a tag or an answer)
+    const parts = html.split(/(<[^>]+>)/);
+    p.keys.forEach(([k,zh])=>{
+      const re = new RegExp('\\b'+reEsc(esc(k))+'\\b','i');
+      for (let i=0;i<parts.length;i++){
+        if (parts[i].startsWith('<') || !parts[i]) continue;
+        const m = re.exec(parts[i]);
+        if (m){ parts[i] = parts[i].slice(0,m.index)+'<u class="k" title="'+esc(zh)+'">'+m[0]+'</u>'+parts[i].slice(m.index+m[0].length); break; }
+      }
+    });
+    html = parts.join('');
+  }
+  const dlg = Array.isArray(p.spoken);
+  return '<div class="transcript">'+html.split('\n').map((t,i)=>'<p>'+(dlg?'<span class="sp">'+(i%2?'B':'A')+'</span>':'')+t+'</p>').join('')+'</div>';
+}
+function keysHtml(p){
+  if (!p.keys || !p.keys.length) return '';
+  return '<div class="keys"><span class="klabel">前後文關鍵字（答案就在這些字附近；點一下會念）</span>'+p.keys.map(([k,zh])=>'<span class="k" data-say="'+esc(k)+'" role="button" tabindex="0"><b>'+esc(k)+'</b><i>'+esc(zh)+'</i></span>').join('')+'</div>';
+}
+function drawWords(n){
+  const pool = wordPool();
+  if (S.mode==='review') return shuffle(pool.slice(0, Math.max(n, Math.min(pool.length, 20)))).slice(0,n);
+  const weighted = pool.map(w=>{ const r=Store.words[w.key]; const wt = 1 + (r? Math.max(0, r.wrong*2 - r.right) : 0); return {w, wt}; });
+  const out=[]; const used=new Set();
+  while(out.length<n && used.size<pool.length){
+    let total=0; weighted.forEach(x=>{ if(!used.has(x.w.key)) total+=x.wt; });
+    let t=Math.random()*total;
+    for(const x of weighted){ if(used.has(x.w.key)) continue; t-=x.wt; if(t<=0){ used.add(x.w.key); out.push(x.w); break; } }
+  }
+  return out;
+}
+
+/* ---------- 語音 ---------- */
+let voices=[]; let currentUtt=null;
+function loadVoices(){ try{ voices = speechSynthesis.getVoices()||[]; }catch(e){ voices=[]; } }
+if ('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices; }
+function pickVoice(lang){
+  const want = lang.toLowerCase();
+  const norml = v => (v.lang||'').replace('_','-').toLowerCase();
+  const prefer = {'en-gb':['daniel','kate','serena','google uk english','arthur','martha'],'en-au':['karen','lee','google australian','catherine'],'en-us':['samantha','ava','allison','google us english','aaron']}[want]||[];
+  let c = voices.filter(v=>norml(v)===want);
+  if(!c.length) c = voices.filter(v=>norml(v).startsWith('en'));
+  if(!c.length) return null;
+  for (const p of prefer){ const hit = c.find(v=>v.name.toLowerCase().includes(p)); if(hit) return hit; }
+  return c.find(v=>!/compact|eloquence/i.test(v.name)) || c[0];
+}
+function accentLabel(lang){ const f = TTS_LANGS.find(x=>x[0].toLowerCase()===(lang||'').toLowerCase()); return f ? f[1] : lang; }
+function chooseAccent(){
+  if (S.accent!=='random') return S.accent;
+  loadVoices();
+  const norml = v => (v.lang||'').replace('_','-').toLowerCase();
+  const avail = TTS_LANGS.filter(([l])=>voices.some(v=>norml(v)===l.toLowerCase()));
+  return pick(avail.length ? avail : TTS_LANGS.slice(0,3))[0];
+}
+function pickVoices(lang){
+  const v1 = pickVoice(lang);
+  const norml = v => (v.lang||'').replace('_','-').toLowerCase();
+  const same = voices.filter(v=>norml(v)===lang.toLowerCase() && v!==v1 && !/compact|eloquence/i.test(v.name));
+  return [v1, same.length ? same[0] : null];
+}
+function toParts(spoken){
+  const turns = Array.isArray(spoken) ? spoken : [spoken];
+  const out = [];
+  turns.forEach((t,i)=>{ (t.match(/[^.!?]+(?:[.!?]+["']?)?/g)||[t]).forEach(s=>{ if (s.trim()) out.push({text:s.trim(), sp: Array.isArray(spoken) ? i%2 : 0}); }); });
+  return out;
+}
+let speakToken = 0; let liveUtts = [];
+function speakParts(parts, lang, onDone){
+  if (!('speechSynthesis' in window)){ ttsUnavailable(); return; }
+  try{
+    speechSynthesis.cancel();
+    const token = ++speakToken;
+    const go = ()=>{
+      if (token!==speakToken) return;
+      const vs = pickVoices(lang); let started=false, remaining=parts.length;
+      $('play').classList.add('playing'); $('playLabel').textContent='播放中…';
+      const done = ()=>{ $('play').classList.remove('playing'); $('playLabel').textContent='再聽一次'; if (onDone && started) onDone(); };
+      liveUtts = parts.map(p=>{
+        const u = new SpeechSynthesisUtterance(p.text);
+        u.lang = lang; const v = (p.sp===1 && vs[1]) ? vs[1] : vs[0]; if (v) u.voice = v;
+        u.rate = S.rate; u.pitch = (p.sp===1 && !vs[1]) ? 0.8 : 1;
+        u.onstart = ()=>{ started=true; S.ttsOk=true; };
+        u.onend = ()=>{ if (token!==speakToken) return; if (--remaining<=0) done(); };
+        u.onerror = e=>{ if (token!==speakToken) return; if (--remaining<=0) done(); if (!started && e && e.error!=='interrupted' && e.error!=='canceled') ttsUnavailable(); };
+        return u;
+      });
+      liveUtts.forEach(u=>speechSynthesis.speak(u));
+      setTimeout(()=>{ if (token===speakToken && !started && S.ttsOk!==true && !speechSynthesis.speaking) ttsUnavailable(); }, 3000);
+    };
+    setTimeout(go, 60);
+  }catch(e){ ttsUnavailable(); }
+}
+function speak(text){ speakParts([{text, sp:0}], S.curAccent || chooseAccent()); }
+function stopSpeech(){ try{ speakToken++; if ('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){} $('play').classList.remove('playing'); }
+function ttsUnavailable(){
+  if (S.ttsOk===false) return;
+  S.ttsOk=false;
+  showNotice('這個裝置目前放不出英文語音。短文會改成顯示錄音原文（原文裡的答案字會遮住）；聽寫題改成顯示中文；數字題顯示英文文字讓你換算。');
+  if (S.mode==='pass' && P && !P.submitted) showMaskedTranscript();
+  else if (S.round && !S.round.answered) revealHint();
+}
+
+/* ---------- 畫面 ---------- */
+const el = { prompt:$('prompt'), sub:$('sub'), play:$('play'), playLabel:$('playLabel'), hintRow:$('hintRow'), hint:$('hint'), form:$('form'), ans:$('ans'), options:$('options'), fb:$('fb'), next:$('next'), notice:$('notice'), qnum:$('qnum'), qkind:$('qkind'), summary:$('summary'), passage:$('passage'), ygbox:$('ygbox') };
+function showNotice(msg){ el.notice.textContent=msg; el.notice.classList.remove('hidden'); }
+function hideNotice(){ el.notice.classList.add('hidden'); }
+function isTTSMode(){ return S.mode==='pass' || S.mode==='num' || S.mode==='review'; }
+function ygAvailable(){ return !window.claude; }
+
+function renderHeader(){
+  const now = new Date(); const exam = new Date(EXAM_DATE+'T00:00:00');
+  const days = Math.ceil((exam - new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+  $('countdown').textContent = days>0 ? '距 11/17 聽力重考還有 '+days+' 天' : (days===0 ? '今天就是 11/17，加油' : '11/17 已過');
+  const t = Store.today || newDay();
+  $('todayStat').textContent = t.correct+'／'+t.answered;
+  const r = Store.summary.recent||[];
+  if (r.length<20) $('bandStat').textContent = '近 40 題估分：再作答 '+(20-r.length)+' 題後顯示';
+  else { const c = r.reduce((a,b)=>a+b,0); const est = Math.round(c/r.length*40); $('bandStat').textContent = '近 '+r.length+' 題對 '+c+' → 估 Band '+bandOf(est); }
+  const n = Object.values(Store.words).filter(w=>w.wrong>0).length;
+  $('errCount').textContent = n? '（'+n+' 個字）' : '';
+  renderErrBook();
+}
+function renderErrBook(){
+  const list = Object.values(Store.words).filter(w=>w.wrong>0).sort((a,b)=>(b.wrong-b.right)-(a.wrong-a.right)).slice(0,60);
+  $('errList').innerHTML = list.map(w=>'<li><span><span class="en">'+esc(w.en)+'</span> <span class="zh">'+esc(w.zh)+'</span>'+ygLink(w.en)+'</span><span class="cnt">錯 '+w.wrong+'・對 '+w.right+'</span></li>').join('');
+  $('errNote').textContent = list.length ? '錯過的字依「錯多於對」排序；答對幾次後會自然往後退。' : '錯過的單字會記在這裡；「錯題複習」模式會優先抽這些字。';
+  $('saveState').textContent = Store.kind==='db' ? '紀錄已同步到這個作品的資料庫，換裝置開也看得到。' : (Store.kind==='local' ? '紀錄只存在這個瀏覽器裡。' : (Store.failed ? '這次的紀錄無法儲存，關掉頁面就會消失。' : ''));
+}
+function renderBanks(){
+  if (S.mode==='phr'){
+    const keys = Object.keys(PHR).concat('all');
+    $('banks').innerHTML = keys.map(k=>'<button type="button" data-cat="'+k+'" aria-pressed="'+(S.phrCat===k)+'">'+esc(k==='all'?'全部 500':PHR[k].name)+'</button>').join('');
+    return;
+  }
+  const keys = (S.mode==='pass' ? ['p1','p2','p3','p4'] : Object.keys(BANKS)).concat('all');
+  const sel = (S.mode==='pass' && S.bank==='spell') ? 'all' : S.bank;
+  $('banks').innerHTML = keys.map(k=>'<button type="button" data-bank="'+k+'" aria-pressed="'+(sel===k)+'">'+esc(k==='all'?'全部':BANKS[k].name)+'</button>').join('');
+}
+function setMode(m){
+  stopSpeech();
+  if (S.mode==='yg' && m!=='yg') ygPause();
+  S.mode = m;
+  document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.mode===m)));
+  $('bankRow').classList.toggle('hidden', !(m==='pass'||m==='yg'||m==='phr'));
+  $('voiceRow').classList.toggle('hidden', m==='yg');
+  $('phrList').classList.toggle('hidden', m!=='phr');
+  if (m==='phr') renderPhrList();
+  renderBanks();
+  startRound();
+}
+function resetCard(){
+  hideNotice(); el.summary.classList.add('hidden');
+  el.fb.classList.add('hidden'); el.next.classList.add('hidden'); el.hint.classList.add('hidden'); el.hint.innerHTML='';
+  el.passage.classList.add('hidden'); el.ygbox.classList.add('hidden'); ygPause();
+  el.form.classList.add('hidden'); el.options.classList.add('hidden'); el.play.classList.add('hidden'); el.hintRow.classList.add('hidden');
+  el.ans.value=''; el.ans.disabled=false; $('submit').disabled=false;
+}
+function startRound(items){
+  resetCard();
+  if (S.mode==='pass' && !items) return startPassage();
+  if (S.mode==='yg' && !items) return startYG();
+  let list = items;
+  if (!list){
+    if (S.mode==='syn') list = Array.from({length:ROUND}, synItem);
+    else if (S.mode==='num') list = Array.from({length:ROUND}, numItem);
+    else if (S.mode==='phr') list = drawPhr(ROUND);
+    else {
+      if (S.mode==='review' && reviewPool().length<3){
+        showNotice('錯題本還不到 3 個字。先做幾篇短文填空，錯的字會自動收進來。');
+        S.round=null; el.prompt.textContent='—'; el.sub.textContent=''; el.qnum.textContent='錯題複習'; el.qkind.textContent='';
+        return;
+      }
+      list = drawWords(ROUND);
+    }
+  }
+  S.round = { items:list, i:0, correct:0, wrong:[], answered:false };
+  showItem();
+}
+function cur(){ return S.round ? S.round.items[S.round.i] : null; }
+function showItem(){
+  const r=S.round, it=cur(); r.answered=false; r.hinted=false;
+  el.qnum.textContent = '第 '+(r.i+1)+' 題／'+r.items.length;
+  el.fb.classList.add('hidden'); el.next.classList.add('hidden'); el.hint.classList.add('hidden'); el.hint.innerHTML='';
+  el.ans.value=''; el.ans.disabled=false; $('submit').disabled=false;
+  $('progText').textContent = r.i+'／'+r.items.length; $('bar').style.width=(r.i/r.items.length*100)+'%'; $('roundScore').textContent='答對 '+r.correct;
+  el.playLabel.textContent='播放';
+  S.curAccent = chooseAccent();
+  el.qkind.textContent='';
+  if (it.type==='word'){
+    el.qkind.textContent = (BANKS[it.bank]?BANKS[it.bank].name:'') + (S.mode==='review'?' · 錯題':'');
+    el.prompt.innerHTML = '<span class="zh">聽錄音，寫下這個字</span>'; el.sub.textContent = (S.ttsOk===false ? it.zh : '口音：'+accentLabel(S.curAccent));
+    el.play.classList.remove('hidden'); el.hintRow.classList.remove('hidden'); $('hintBtn').textContent='提示（中文）';
+    el.form.classList.remove('hidden'); el.options.classList.add('hidden');
+  } else if (it.type==='phr'){
+    el.qkind.textContent = PHR[it.cat].name+' · '+it.sub;
+    el.prompt.innerHTML = '<span class="en">'+phrBlankHtml(it,false)+'</span>';
+    el.sub.textContent = it.zh;
+    el.play.classList.add('hidden'); el.hintRow.classList.remove('hidden'); $('hintBtn').textContent='提示（首字母與長度）';
+    el.form.classList.remove('hidden'); el.options.classList.add('hidden');
+  } else if (it.type==='num'){
+    el.qkind.textContent='數字與拼名';
+    el.prompt.innerHTML='<span class="zh">'+esc(it.label)+'</span>'; el.sub.textContent = it.kind==='phone' ? '寫數字即可，空格不計' : (it.kind==='price' ? '寫數字，例如 45.50' : (it.kind==='time' ? '例如 7:15' : (it.kind==='date' ? '例如 23 March' : '')));
+    el.play.classList.remove('hidden'); el.hintRow.classList.remove('hidden'); $('hintBtn').textContent='提示（看英文文字）';
+    el.form.classList.remove('hidden'); el.options.classList.add('hidden');
+  } else {
+    el.qkind.textContent='同義替換';
+    el.prompt.innerHTML = it.q; el.sub.textContent='選一個';
+    el.play.classList.toggle('hidden', S.ttsOk===false); el.hintRow.classList.add('hidden');
+    el.form.classList.add('hidden'); el.options.classList.remove('hidden');
+    el.options.innerHTML = it.options.map((o,i)=>'<button type="button" data-opt="'+esc(o)+'"><span class="k">'+'ABCD'[i]+'</span><span>'+esc(o)+'</span></button>').join('');
+  }
+  if (S.ttsOk===false && (it.type==='word' || it.type==='num')) revealHint();
+  if (S.audioUnlocked && S.ttsOk!==false && it.type!=='phr') setTimeout(()=>speakCurrent(), 250);
+  if (it.type!=='syn') el.ans.focus({preventScroll:true});
+}
+function unlockAudio(){
+  try{ const C=window.AudioContext||window.webkitAudioContext; if (C && !T.ctx) T.ctx=new C(); if (T.ctx && T.ctx.state==='suspended') T.ctx.resume(); }catch(e){}
+  try{ if ('speechSynthesis' in window && !S.audioUnlocked){ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); } }catch(e){}
+}
+function speakCurrent(){
+  unlockAudio();
+  S.audioUnlocked=true;
+  if (S.mode==='pass'){
+    if (!P) return;
+    if (P.played && !P.audioStarted && T.running && T.label==='讀題'){ tStop(); playPassage(); return; }
+    if (!P.played && T.rhythm && !P.submitted){ P.played=true; tSet(30,'讀題', ()=>playPassage()); tStart(); el.playLabel.textContent='讀題中…30 秒後自動播放（再按一次直接播）'; return; }
+    playPassage(); return;
+  }
+  const it=cur(); if(!it) return;
+  if (it.type==='word' || it.type==='phr') speak(it.en);
+  else if (it.type==='num') speak(it.spoken);
+  else speak(it.spokenText);
+}
+function playPassage(){
+  if (!P) return; P.played=true; P.audioStarted=true;
+  speakParts(toParts(P.p.spoken), S.curAccent, ()=>{ if (T.rhythm && S.mode==='pass' && P && !P.submitted){ tSet(30,'檢查答案'); tStart(); } });
+}
+function revealHint(){
+  if (S.mode==='pass'){
+    if (!P) return;
+    el.hint.innerHTML = P.p.ans.map((a,i)=>'<span class="bl"><b>'+(i+1)+'</b></span> '+esc(P.p.zh[i]||'')).join('　');
+    el.hint.classList.remove('hidden'); return;
+  }
+  const it=cur(); if(!it) return; S.round.hinted=true;
+  if (it.type==='word') el.hint.textContent = it.zh;
+  else if (it.type==='num') el.hint.innerHTML = '<span class="en">'+esc(it.hint)+'</span>';
+  else if (it.type==='phr') el.hint.innerHTML = '<span class="en">'+esc(it.answer[0])+' '+'_ '.repeat(Math.max(0,it.answer.length-1)).trim()+'</span>（'+it.answer.length+' 個字母）';
+  el.hint.classList.remove('hidden');
+}
+function checkForms(forms, raw){
+  const n=norm(raw), t=tight(raw);
+  return !!raw && forms.some(f=>norm(f)===n || tight(f)===t || (/^\d/.test(f) && digitsOnly(raw)!=='' && digitsOnly(raw)===digitsOnly(f)));
+}
+
+/* ---------- 短文填空 ---------- */
+let P = null;
+function startPassage(){
+  const p = drawPassage();
+  S.curAccent = chooseAccent();
+  P = { p, submitted:false };
+  el.qnum.textContent = (BANKS[p.part]?BANKS[p.part].name:'') + ' · 短文填空';
+  el.qkind.textContent = '口音：'+accentLabel(S.curAccent)+(Array.isArray(p.spoken)?' · 對話':' · 獨白');
+  el.prompt.innerHTML = '<span class="zh">'+esc(p.title)+'</span>';
+  el.sub.textContent = '先讀題，再按播放。每格填 ONE WORD AND/OR A NUMBER，填完按交卷。';
+  el.play.classList.remove('hidden'); el.playLabel.textContent='播放';
+  el.hintRow.classList.remove('hidden'); $('hintBtn').textContent='提示（每格的詞性或類別）';
+  el.passage.classList.remove('hidden');
+  el.passage.innerHTML = keysHtml(p) + p.shown.split('\n').map((line,i)=>{
+    const h = esc(line).replace(/\{(\d+)\}/g, (m,n)=>'<span class="bl"><b>'+n+'</b><input id="bl'+n+'" data-n="'+n+'" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="第 '+n+' 格"></span>');
+    return '<div class="'+(i===0?'pt':'pl')+'">'+h+'</div>';
+  }).join('') + '<div class="row"><button type="button" class="next" id="passSubmit">交卷</button></div>';
+  $('progText').textContent = '0／'+p.ans.length; $('bar').style.width='0%'; $('roundScore').textContent='';
+  if (S.ttsOk===false) showMaskedTranscript();
+  else if (S.audioUnlocked) setTimeout(()=>speakCurrent(), 400);
+}
+function showMaskedTranscript(){
+  if (!P) return;
+  let html = transcriptHtml(P.p, true).replace(/<b>[^<]*<\/b>/g, '<span class="blank" aria-label="空格"></span>');
+  el.hint.innerHTML = '<div class="sub">語音無法播放，改讀原文（答案字已遮住）：</div>'+html;
+  el.hint.classList.remove('hidden');
+}
+function submitPassage(){
+  if (!P || P.submitted) return;
+  P.submitted = true; stopSpeech();
+  const p = P.p; let correct = 0; const rows = [];
+  p.ans.forEach((forms,i)=>{
+    const inp = $('bl'+(i+1)); const raw = (inp ? inp.value : '').trim();
+    const ok = checkForms(forms, raw); if (ok) correct++;
+    if (inp){ inp.readOnly = true; inp.classList.add(ok?'ok':'bad'); }
+    record({ type:'blank', key:keyOf(forms[0]), en:forms[0], zh:(p.zh&&p.zh[i])||'', bank:p.part, forms }, ok);
+    rows.push('<li class="'+(ok?'ok':'bad')+'"><span class="n">'+(i+1)+'</span><span class="en">'+(ok?'✓ ':'✗ ')+esc(forms[0])+'</span>'+(forms.length>1?'<span class="zh">（也可寫 '+esc(forms.slice(1).join(' / '))+'）</span>':'')+(!ok&&raw?'<span class="yours">'+esc(raw)+'</span>':'')+'<span class="zh">'+esc((p.zh&&p.zh[i])||'')+'</span>'+(/^\d/.test(forms[0])?'':ygLink(forms[0]))+'</li>');
+  });
+  const btn = $('passSubmit'); if (btn) btn.classList.add('hidden');
+  $('progText').textContent = correct+'／'+p.ans.length; $('bar').style.width = (correct/p.ans.length*100)+'%'; $('roundScore').textContent = '答對 '+correct;
+  const band = correct>=p.ans.length-1 ? '這個命中率相當於 Band 7 以上。' : (correct>=Math.ceil(p.ans.length*0.65) ? '守住這個命中率就是 6.5 的水準。' : '先看原文對照，再聽一次。');
+  el.fb.className = 'fb '+(correct>=Math.ceil(p.ans.length*0.65)?'ok':'bad');
+  el.fb.innerHTML = '<div class="verdict">本篇 '+correct+'／'+p.ans.length+'　'+band+'</div><ol class="blanks">'+rows.join('')+'</ol>'
+    + '<details open><summary>錄音原文（口音：'+esc(accentLabel(S.curAccent))+'）</summary>'+transcriptHtml(p, true)+'</details>';
+  el.fb.classList.remove('hidden');
+  el.next.textContent = '下一篇'; el.next.classList.remove('hidden');
+  el.fb.scrollIntoView({behavior:'smooth', block:'start'});
+  // 真人語速複習：答錯的字優先，全對就用本篇的字
+  const words = []; const seen = new Set();
+  const addW = (forms,i,wrong)=>{ if (/^\d/.test(forms[0]) || seen.has(forms[0])) return; seen.add(forms[0]); words.push({ en:forms[0], forms, zh:(p.zh&&p.zh[i])||'', key:keyOf(forms[0]), bank:p.part, wrong }); };
+  p.ans.forEach((forms,i)=>{ const inp=$('bl'+(i+1)); if (inp && inp.classList.contains('bad')) addW(forms,i,true); });
+  const wrongCount = words.length;
+  p.ans.forEach((forms,i)=>{ const inp=$('bl'+(i+1)); if (!(inp && inp.classList.contains('bad'))) addW(forms,i,false); });
+  if (words.length){
+    const totalWrong = p.ans.length - correct;
+    if (ygAvailable()) ygStartRound(words.slice(0, YG_ROUND), wrongCount ? '真人語速：先把答錯的 '+wrongCount+' 個字聽回來' : (totalWrong ? '答錯的是數字（YouGlish 不能搜數字），用真人語速聽本篇的字' : '全對，用真人語速再聽一次本篇的字'));
+    else el.fb.insertAdjacentHTML('beforeend', '<div class="note" style="margin-top:8px">真人語速複習：'+(wrongCount?'答錯的字先聽，':'')+'點各格旁的 YouGlish 連結，會用隨機口音播真人說這個字的片段。桌面版會直接在程式裡播並讓你聽寫。</div>');
+  }
+}
+function diffMark(correct, yours){
+  const a=correct, b=yours||''; let out='';
+  for (let i=0;i<a.length;i++){ const same = b[i]!==undefined && b[i].toLowerCase()===a[i].toLowerCase(); out += same? esc(a[i]) : '<span class="x">'+esc(a[i])+'</span>'; }
+  return out;
+}
+function answer(raw){
+  const r=S.round, it=cur(); if(!r||!it||r.answered) return;
+  r.answered=true;
+  let ok=false, shown='';
+  if (it.type==='word' || it.type==='phr'){ ok = checkForms(it.forms, raw); shown = it.forms.join(' / '); }
+  else if (it.type==='num'){ ok = !!raw && it.check(raw); shown = it.expected; }
+  else { ok = raw===it.answer; shown = it.answer; }
+  if (ok) r.correct++; else r.wrong.push({it, yours:raw});
+  record(it, ok);
+  el.fb.className = 'fb '+(ok?'ok':'bad');
+  let html = '<div class="verdict">'+(ok?'✓ 正確':'✗ 錯了')+'</div>';
+  if (it.type==='word'){
+    html += '<div class="ans">'+(ok? esc(shown) : diffMark(it.en, raw))+(ok||it.forms.length<2?'':'<span class="note"> （也可寫 '+esc(it.forms.slice(1).join(' / '))+'）</span>')+'</div>';
+    if (!ok && raw) html += '<div class="yours">'+esc(raw)+'</div>';
+    html += '<div class="note">'+esc(it.zh)+'　'+ygLink(it.en)+'</div>';
+  } else if (it.type==='phr'){
+    html += '<div class="ans">'+phrBlankHtml(it,true)+'</div>';
+    if (!ok && raw) html += '<div class="yours">'+esc(raw)+'</div>';
+    html += '<div class="note">'+esc(it.zh)+'　'+ygLink(it.en)+'</div>';
+    el.play.classList.remove('hidden'); el.playLabel.textContent='聽整句';
+  } else if (it.type==='num'){
+    html += '<div class="ans">'+esc(shown)+'</div><div class="note">'+esc(it.spoken)+'</div>'+(!ok&&raw?'<div class="yours">'+esc(raw)+'</div>':'');
+  } else {
+    const [head, list] = SYN.find(p=>p[0]===(it.dir==='a'?it.prompt:it.answer));
+    html += '<div class="ans">'+esc(head)+' ＝ '+esc(list.join(' / '))+'</div>';
+    el.options.querySelectorAll('button').forEach(b=>{ b.disabled=true; if(b.dataset.opt===it.answer) b.classList.add('right'); else if(b.dataset.opt===raw) b.classList.add('wrong'); });
+  }
+  el.fb.innerHTML = html; el.fb.classList.remove('hidden');
+  el.ans.disabled=true; $('submit').disabled=true;
+  el.next.textContent = r.i+1>=r.items.length ? '看本回結果' : '下一題';
+  el.next.classList.remove('hidden'); el.next.focus();
+  $('roundScore').textContent='答對 '+r.correct; $('progText').textContent=(r.i+1)+'／'+r.items.length; $('bar').style.width=((r.i+1)/r.items.length*100)+'%';
+  if ((it.type==='phr' || (!ok && it.type==='word')) && S.audioUnlocked && S.ttsOk!==false) setTimeout(()=>speak(it.en), 300);
+}
+function next(){
+  if (S.mode==='pass'){ if (P && P.submitted){ startRound(); $('card').scrollIntoView({behavior:'smooth', block:'start'}); } return; }
+  const r=S.round; if(!r||!r.answered) return;
+  r.i++;
+  if (r.i>=r.items.length) return finishRound();
+  showItem();
+}
+function finishRound(){
+  const r=S.round;
+  $('sumScore').textContent = r.correct;
+  $('sumNote').textContent = r.correct>=9 ? '這個水準相當於 Band 7 以上的命中率，可以換下一個題庫。' : (r.correct>=7 ? '7–8 題就是 6.5 需要的命中率，守住這個水準。' : (r.correct>=5 ? '再多練一回，錯的字先在下面看一次。' : '先看下面的錯題，隔天再來一回。'));
+  $('sumWrong').innerHTML = r.wrong.map(w=>{ const it=w.it; const en = (it.type==='word'||it.type==='phr')? it.en : (it.type==='num'? it.expected : it.answer); const zh = (it.type==='word'||it.type==='phr')? it.zh : (it.type==='num'? it.spoken : ''); return '<li><span><span class="en">'+esc(en)+'</span> <span class="zh">'+esc(zh)+'</span>'+((it.type==='word'||it.type==='phr')?ygLink(en):'')+'</span><span class="cnt">'+esc(w.yours||'（空白）')+'</span></li>'; }).join('') || '<li><span class="zh">全對，沒有錯題。</span></li>';
+  $('redo').classList.toggle('hidden', !r.wrong.some(w=>w.it.type==='word'||w.it.type==='phr'));
+  el.summary.classList.remove('hidden'); el.summary.scrollIntoView({behavior:'smooth', block:'start'});
+  el.next.classList.add('hidden');
+  flushNow();
+}
+
+/* ---------- 紀錄與儲存 ---------- */
+function record(it, ok){
+  const t = Store.today || (Store.today = newDay());
+  t.answered++; if(ok) t.correct++;
+  const m = t.modes[S.mode] || (t.modes[S.mode]={a:0,c:0}); m.a++; if(ok) m.c++;
+  if (it.type==='num'){ const k = t.modes['num:'+it.kind] || (t.modes['num:'+it.kind]={a:0,c:0}); k.a++; if(ok) k.c++; }
+  const rec = Store.summary.recent || (Store.summary.recent=[]); rec.push(ok?1:0); while(rec.length>40) rec.shift();
+  Store.summary.total=(Store.summary.total||0)+1; if(ok) Store.summary.correct=(Store.summary.correct||0)+1; Store.summary.updated=TODAY;
+  if (it.type==='word' || it.type==='phr' || (it.type==='blank' && !/^\d/.test(it.forms[0]))){
+    const en = it.type==='blank' ? it.forms[0] : it.en;
+    const w = Store.words[it.key] || (Store.words[it.key]={ key:it.key, en, zh:it.zh, bank:it.bank, wrong:0, right:0 });
+    if (ok) w.right++; else w.wrong++; w.last=TODAY; w.mode=S.mode;
+    Store.dirtyWords.add(it.key);
+  }
+  Store.dirtyMeta=true;
+  renderHeader();
+  scheduleFlush();
+}
+function scheduleFlush(){ clearTimeout(Store.timer); Store.timer=setTimeout(flushNow, 1500); }
+let flushing = Promise.resolve();
+function flushNow(){
+  clearTimeout(Store.timer);
+  flushing = flushing.then(async ()=>{
+    if (Store.kind==='db' && Store.db){
+      try{
+        const keys=[...Store.dirtyWords]; Store.dirtyWords.clear();
+        for (const k of keys) await Store.db.doc('words/'+k).set(Store.words[k]);
+        if (Store.dirtyMeta){ Store.dirtyMeta=false; await Store.db.doc('days/'+TODAY).set(Store.today||newDay()); await Store.db.doc('stats/summary').set(Store.summary); }
+      }catch(e){ Store.kind='local'; Store.dirtyMeta=true; saveLocal(); renderErrBook(); }
+    } else saveLocal();
+  }).catch(()=>{});
+  return flushing;
+}
+function saveLocal(){
+  try{ localStorage.setItem('ielts-drill-v1', JSON.stringify({ words:Store.words, today:Store.today, summary:Store.summary })); if(Store.kind!=='db') Store.kind='local'; }
+  catch(e){ if(Store.kind!=='db'){ Store.kind='memory'; Store.failed=true; } }
+}
+function loadLocal(){
+  try{ const raw=localStorage.getItem('ielts-drill-v1'); if(!raw) return false; const d=JSON.parse(raw);
+    Store.words=d.words||{}; Store.summary=d.summary||Store.summary; Store.today = (d.today&&d.today.date===TODAY)? d.today : newDay(); Store.kind='local'; return true; }
+  catch(e){ return false; }
+}
+async function initStore(){
+  let db=null;
+  try{ if (window.claude && typeof window.claude.use==='function') db = await window.claude.use('db'); }catch(e){ db=null; }
+  if (db){
+    try{
+      const snap = await db.collection('words').limit(1000).get();
+      snap.docs.forEach(d=>{ const w=d.data(); if(w && w.key) Store.words[w.key]=Object.assign({}, w); });
+      const s = await db.doc('stats/summary').get(); if (s.exists) Store.summary = Object.assign({recent:[],total:0,correct:0}, s.data());
+      const pre = Store.today || newDay();
+      const t = await db.doc('days/'+TODAY).get(); Store.today = t.exists ? Object.assign(newDay(), t.data()) : newDay();
+      if (pre.answered>0){ Store.today.answered+=pre.answered; Store.today.correct+=pre.correct; for (const k in pre.modes){ const m=Store.today.modes[k]||(Store.today.modes[k]={a:0,c:0}); m.a+=pre.modes[k].a; m.c+=pre.modes[k].c; } Store.dirtyMeta=true; }
+      Store.db=db; Store.kind='db';
+      if (Store.dirtyMeta || Store.dirtyWords.size) scheduleFlush();
+      renderHeader(); return;
+    }catch(e){ /* fall through to local */ }
+  }
+  if (!loadLocal()){ Store.kind = 'memory'; try{ localStorage.setItem('ielts-drill-probe','1'); localStorage.removeItem('ielts-drill-probe'); Store.kind='local'; }catch(e){ Store.failed=true; } }
+  if (!Store.today) Store.today=newDay();
+  renderHeader();
+}
+
+/* ---------- YouGlish 真人語速（只在桌面下載版能用：claude.ai 頁面不允許嵌入 YouTube） ---------- */
+const YG_ROUND = 6;
+const YGS = { state:'idle', widget:null, round:null, timer:null, pending:false };
+function ygPause(){ try{ if (YGS.widget) YGS.widget.pause(); }catch(e){} }
+function ygCur(){ const r=YGS.round; return (r && !r.submitted) ? r.words[r.i] : null; }
+function ygFail(msg){
+  YGS.state='failed'; clearTimeout(YGS.timer);
+  const w = ygCur() ? ygCur().en : 'deposit';
+  $('yglines').innerHTML = '<div class="ygl"><span class="cap">'+esc(msg)+'　'+ygLink(w).replace('YouGlish・','在 YouGlish 網站開：')+'</span></div>';
+  $('ygAdvance').classList.add('hidden');
+}
+function ygShow(title){
+  $('ygtitle').textContent = title;
+  el.ygbox.classList.remove('hidden');
+  $('ygfb').classList.add('hidden'); $('ygfb').innerHTML=''; $('yglines').innerHTML='';
+  $('ygAdvance').classList.remove('hidden');
+  if (!ygAvailable()){ ygFail('這個頁面不能嵌入 YouGlish 播放器，請用桌面下載版。'); return false; }
+  if (YGS.state==='failed'){ ygFail('YouGlish 這次載入失敗，重新整理頁面再試。'); return false; }
+  if (YGS.state==='idle') loadYG();
+  return true;
+}
+function loadYG(){
+  YGS.state='loading';
+  window.onYouglishAPIReady = function(){
+    try{
+      YGS.widget = new window.YG.Widget('ygplayer', { components: 80, autoStart: 1, events: { onFetchDone: ygFetchDone, onVideoChange: ygVideoChange, onCaptionChange: ygCaption, onError: ygError } });
+      YGS.state='ready'; clearTimeout(YGS.timer);
+      if (YGS.pending){ YGS.pending=false; ygPlayCurrent(); }
+    }catch(e){ ygFail('YouGlish 播放器無法建立。'); }
+  };
+  const s=document.createElement('script'); s.src='https://youglish.com/public/emb/widget.js'; s.async=true; s.charset='utf-8';
+  s.onerror=()=>ygFail('無法載入 YouGlish（需要網路連線）。');
+  document.head.appendChild(s);
+  YGS.timer=setTimeout(()=>{ if (YGS.state!=='ready') ygFail('YouGlish 沒有回應。'); }, 15000);
+}
+const YGSESS = { n:0, c:0 };
+function startYG(){
+  el.qnum.textContent='YouGlish 單字 · 第 '+(YGSESS.n+1)+' 句'; el.qkind.textContent='口音隨機';
+  el.prompt.innerHTML='<span class="zh">真人語速填空</span>'; el.sub.textContent='一次一句：影片播到關鍵字時字幕會遮住，填你聽到的字，按「交卷」對答案，再按「下一句」。';
+  ygStartRound(drawWords(1), 'YouGlish 單字 · '+(BANKS[S.bank]?BANKS[S.bank].name:'全部'));
+}
+function ygStartRound(words, title){
+  YGS.round = { words: words.map(w=>({ en:w.en, forms:w.forms, zh:w.zh, key:w.key, bank:w.bank, wrong:!!w.wrong, accent:pick(YG_ACCENTS), caps:[], line:null, spokenForm:null, retried:false, raw:'' })), i:0, submitted:false, correct:0 };
+  if (!ygShow(title)) return;
+  $('ygAdvance').textContent = words.length>1 ? '下一句' : '交卷';
+  ygAppendLine(0); ygProgress(); ygPlayCurrent();
+}
+function ygProgress(){
+  const r=YGS.round; if (!r || S.mode!=='yg') return;
+  const n = YGSESS.n + (r.submitted ? 0 : 0);
+  $('progText').textContent = '本次已做 '+n+' 句'; $('bar').style.width = (n ? YGSESS.c/n*100 : 0)+'%';
+  $('roundScore').textContent = '答對 '+YGSESS.c;
+}
+function ygCapHtml(w, revealed){
+  const cap = w.line || (w.caps.length ? w.caps[w.caps.length-1] : null);
+  if (!cap) return '<span class="sub">'+(YGS.state==='ready' ? '搜尋影片中…' : '載入 YouGlish 中…')+'</span>';
+  return esc(cap).replace(/\[\[\[(.*?)\]\]\]/g, (m,x)=> revealed ? '<b>'+x+'</b>' : '<span class="blank" aria-label="空格"></span>');
+}
+function ygAppendLine(k){
+  const r=YGS.round; const w=r.words[k]; if (!w) return;
+  const d=document.createElement('div'); d.className='ygl'+(k===r.i && !r.submitted ? ' now' : ''); d.id='ygl'+(k+1);
+  d.innerHTML = '<span class="n">'+(k+1)+'</span><span class="acc">口音：'+esc(w.accent[1])+'</span><span class="cap">'+ygCapHtml(w, r.submitted)+'</span>'
+    + '<input id="ygbl'+(k+1)+'" data-k="'+k+'" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="next" aria-label="第 '+(k+1)+' 句" placeholder="聽到的字">';
+  $('yglines').appendChild(d);
+  const inp = d.querySelector('input'); if (inp){ inp.value = w.raw||''; if (k===r.i && !r.submitted) inp.focus({preventScroll:true}); }
+}
+function ygUpdateLine(k){
+  const r=YGS.round; const w=r.words[k]; const d=$('ygl'+(k+1)); if (!w || !d) return;
+  const cap=d.querySelector('.cap'); if (cap) cap.innerHTML = ygCapHtml(w, r.submitted);
+  const acc=d.querySelector('.acc'); if (acc) acc.textContent = '口音：'+w.accent[1];
+}
+function ygPlayCurrent(){
+  const w=ygCur(); if (!w) return;
+  w.caps=[]; w.line=null; w.spokenForm=null;
+  if (YGS.state==='ready') ygFetch(w); else YGS.pending=true;
+}
+function ygFetch(w, noAccent){ try{ YGS.widget.fetch(w.en, 'english', (noAccent || !w.accent[0]) ? undefined : w.accent[0]); }catch(e){ ygFail('YouGlish 搜尋失敗。'); } }
+function ygFetchDone(e){
+  const w=ygCur(); if (!w) return;
+  if (e && e.totalResult===0){
+    if (!w.retried){ w.retried=true; w.accent=['','任意']; ygUpdateLine(YGS.round.i); ygFetch(w, true); return; }
+    const used = new Set(YGS.round.words.map(x=>x.en));
+    const alt = drawWords(12).find(x=>!used.has(x.en));
+    if (alt){ Object.assign(w, { en:alt.en, forms:alt.forms, zh:alt.zh, key:alt.key, bank:alt.bank, wrong:false, accent:pick(YG_ACCENTS), retried:false, caps:[], line:null, spokenForm:null }); ygUpdateLine(YGS.round.i); ygFetch(w); }
+    else ygAdvance();
+    return;
+  }
+  ygUpdateLine(YGS.round.i);
+}
+function ygVideoChange(){ const w=ygCur(); if (!w) return; w.caps=[]; w.line=null; w.spokenForm=null; ygUpdateLine(YGS.round.i); }
+function ygCaption(e){
+  const w=ygCur(); if (!w || !e || typeof e.caption!=='string') return;
+  w.caps.push(e.caption);
+  const m = e.caption.match(/\[\[\[(.*?)\]\]\]/); if (m){ w.line = e.caption; w.spokenForm = m[1]; }
+  ygUpdateLine(YGS.round.i);
+}
+function ygError(e){ const code = e && e.code; if (code===2) ygFail('瀏覽器太舊，無法播放 YouGlish。'); else if (code===3) ygFail('YouGlish 連線逾時。'); else { try{ YGS.widget.next(); }catch(x){} } }
+function ygSaveInput(k){ const r=YGS.round; const inp=$('ygbl'+(k+1)); if (inp && r.words[k]) r.words[k].raw = inp.value.trim(); }
+function ygAdvance(){
+  const r=YGS.round; if (!r) return;
+  if (r.submitted){ if (S.mode==='yg') startRound(); return; }
+  ygSaveInput(r.i);
+  if (r.i >= r.words.length-1){ ygSubmit(); return; }
+  const prev=$('ygl'+(r.i+1)); if (prev) prev.classList.remove('now');
+  r.i++; ygAppendLine(r.i); ygProgress();
+  $('ygAdvance').textContent = r.i>=r.words.length-1 ? '交卷' : '下一句';
+  ygPlayCurrent();
+}
+function ygSubmit(){
+  const r=YGS.round; if (!r || r.submitted) return;
+  r.words.forEach((w,k)=>ygSaveInput(k));
+  r.submitted=true; ygPause();
+  let correct=0; const rows=[];
+  r.words.forEach((w,k)=>{
+    const forms = w.forms.concat(w.spokenForm ? [w.spokenForm] : []);
+    const ok = checkForms(forms, w.raw); w.ok=ok; if (ok) correct++;
+    record({ type:'word', key:w.key, en:w.en, zh:w.zh, bank:w.bank, forms:w.forms }, ok);
+    const inp=$('ygbl'+(k+1)); if (inp){ inp.readOnly=true; inp.classList.add(ok?'ok':'bad'); }
+    const d=$('ygl'+(k+1)); if (d) d.classList.remove('now');
+    ygUpdateLine(k);
+    rows.push('<li class="'+(ok?'ok':'bad')+'"><span class="n">'+(k+1)+'</span><span class="en">'+(ok?'✓ ':'✗ ')+esc(w.en)+'</span>'+(!ok&&w.raw?'<span class="yours">'+esc(w.raw)+'</span>':'')+'<span class="zh">'+esc(w.zh)+'</span>'+ygLink(w.en)+'</li>');
+  });
+  r.correct=correct;
+  if (S.mode==='yg'){ YGSESS.n += r.words.length; YGSESS.c += correct; }
+  ygProgress();
+  const fb=$('ygfb'); fb.className='fb '+(correct>=Math.ceil(r.words.length*0.65)?'ok':'bad');
+  fb.innerHTML = '<div class="verdict">'+(r.words.length===1 ? (correct?'✓ 正確':'✗ 錯了') : '真人語速 '+correct+'／'+r.words.length)+'</div><ol class="blanks">'+rows.join('')+'</ol>';
+  fb.classList.remove('hidden');
+  if (S.mode==='yg') $('ygAdvance').textContent='下一句'; else $('ygAdvance').classList.add('hidden');
+  fb.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ---------- 計時器（依雅思聽力流程：讀題 30 秒 → 錄音 → 檢查 30 秒；全卷 30 分鐘；紙筆謄寫 10 分鐘／電腦檢查 2 分鐘） ---------- */
+const T = { total:30, left:30, label:'讀題', running:false, tick:null, endAt:0, onDone:null, rhythm:true, ctx:null };
+const fmtT = s => Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+function tRender(){
+  $('tTime').textContent = fmtT(T.left); $('tLabel').textContent = T.label;
+  $('tStart').textContent = T.running ? '暫停' : (T.left<=0 ? '再來一次' : '開始');
+  $('timer').classList.toggle('running', T.running);
+  document.querySelectorAll('#tPresets button').forEach(b=>b.setAttribute('aria-pressed', String(+b.dataset.sec===T.total && b.dataset.label===T.label)));
+}
+function tSet(sec, label, onDone){ tStop(); T.total=sec; T.left=sec; T.label=label; T.onDone=onDone||null; $('timer').classList.remove('alarm'); tRender(); }
+function tStart(){
+  if (T.running) return;
+  if (T.left<=0) T.left=T.total;
+  T.running=true; T.endAt=Date.now()+T.left*1000; $('timer').classList.remove('alarm');
+  T.tick=setInterval(tTick, 250); tRender();
+}
+function tTick(){
+  T.left = Math.max(0, Math.ceil((T.endAt-Date.now())/1000)); tRender();
+  if (T.left<=0){ tStop(); tAlarm(); const f=T.onDone; T.onDone=null; if (f) f(); }
+}
+function tStop(){ T.running=false; clearInterval(T.tick); T.tick=null; tRender(); }
+function tReset(){ tStop(); T.left=T.total; T.onDone=null; $('timer').classList.remove('alarm'); tRender(); }
+function tAlarm(){
+  $('timer').classList.add('alarm');
+  try{ if (navigator.vibrate) navigator.vibrate([200,100,200]); }catch(e){}
+  try{
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+    T.ctx = T.ctx || new C(); const ctx=T.ctx; if (ctx.state==='suspended') ctx.resume();
+    [0,0.25,0.5].forEach(t0=>{ const o=ctx.createOscillator(), g=ctx.createGain(); o.type='sine'; o.frequency.value=880; g.gain.value=0.0001; o.connect(g); g.connect(ctx.destination);
+      const at=ctx.currentTime+t0; g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(0.25, at+0.02); g.gain.exponentialRampToValueAtTime(0.0001, at+0.18); o.start(at); o.stop(at+0.2); });
+  }catch(e){}
+}
+$('tStart').addEventListener('click', ()=>{ unlockAudio(); if (T.running) tStop(); else tStart(); });
+$('tReset').addEventListener('click', tReset);
+$('tPresets').addEventListener('click', e=>{ const b=e.target.closest('button[data-sec]'); if(!b) return; unlockAudio(); tSet(+b.dataset.sec, b.dataset.label); tStart(); });
+$('tRhythm').addEventListener('change', e=>{ T.rhythm = e.target.checked; try{ localStorage.setItem('ielts-drill-rhythm', T.rhythm?'1':'0'); }catch(x){} });
+try{ const v=localStorage.getItem('ielts-drill-rhythm'); if (v==='0'){ T.rhythm=false; $('tRhythm').checked=false; } }catch(e){}
+tRender();
+
+/* ---------- 事件 ---------- */
+$('modes').addEventListener('click', e=>{ const b=e.target.closest('button[data-mode]'); if(b) setMode(b.dataset.mode); });
+$('banks').addEventListener('click', e=>{
+  const c=e.target.closest('button[data-cat]'); if (c){ S.phrCat=c.dataset.cat; renderBanks(); renderPhrList(); startRound(); return; }
+  const b=e.target.closest('button[data-bank]'); if(!b) return; S.bank=b.dataset.bank; renderBanks(); startRound();
+});
+$('accent').addEventListener('change', e=>{ S.accent=e.target.value; if (S.mode==='pass' && P && !P.submitted){ S.curAccent=chooseAccent(); el.qkind.textContent='口音：'+accentLabel(S.curAccent)+(Array.isArray(P.p.spoken)?' · 對話':' · 獨白'); } });
+$('rate').addEventListener('change', e=>{ S.rate=parseFloat(e.target.value); });
+el.play.addEventListener('click', ()=>speakCurrent());
+$('hintBtn').addEventListener('click', revealHint);
+el.form.addEventListener('submit', e=>{ e.preventDefault(); if (S.round && S.round.answered) { next(); return; } answer(el.ans.value.trim()); });
+el.options.addEventListener('click', e=>{ const b=e.target.closest('button[data-opt]'); if(b) answer(b.dataset.opt); });
+el.passage.addEventListener('click', e=>{
+  if (e.target.closest('#passSubmit')) { submitPassage(); return; }
+  const k = e.target.closest('.k[data-say]'); if (k && S.ttsOk!==false){ S.audioUnlocked=true; speak(k.dataset.say); }
+});
+el.passage.addEventListener('keydown', e=>{ const k = e.target.closest && e.target.closest('.k[data-say]'); if (k && (e.key==='Enter' || e.key===' ')){ e.preventDefault(); if (S.ttsOk!==false) speak(k.dataset.say); } });
+el.passage.addEventListener('keydown', e=>{
+  if (e.key!=='Enter' || !e.target.matches('input')) return;
+  e.preventDefault();
+  const inputs = [...el.passage.querySelectorAll('input')]; const i = inputs.indexOf(e.target);
+  if (i>=0 && i<inputs.length-1) inputs[i+1].focus(); else submitPassage();
+});
+el.next.addEventListener('click', next);
+$('ygAdvance').addEventListener('click', ygAdvance);
+$('yglines').addEventListener('keydown', e=>{ if (e.key==='Enter' && e.target.matches('input')){ e.preventDefault(); ygAdvance(); } });
+$('ygReplay').addEventListener('click', ()=>{ try{ YGS.widget && YGS.widget.replay(); }catch(e){} });
+$('ygNext').addEventListener('click', ()=>{ try{ YGS.widget && YGS.widget.next(); }catch(e){} });
+$('again').addEventListener('click', ()=>{ startRound(); $('card').scrollIntoView({behavior:'smooth', block:'start'}); });
+$('redo').addEventListener('click', ()=>{ const items = S.round.wrong.filter(w=>w.it.type==='word'||w.it.type==='phr').map(w=>w.it); if(!items.length) return; startRound(items); $('card').scrollIntoView({behavior:'smooth', block:'start'}); });
+document.addEventListener('keydown', e=>{ const a=document.activeElement; if (e.key==='Enter' && S.mode!=='pass' && S.mode!=='yg' && S.round && S.round.answered && (a===document.body || a===el.ans)){ e.preventDefault(); next(); } });
+document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='hidden') flushNow(); });
+
+/* ---------- 啟動 ---------- */
+Store.today = newDay();
+if (ygAvailable()) $('ygTab').hidden = false;
+renderBanks(); renderHeader(); setMode('pass');
+initStore();
+})();
+</script>
+
+</body>
+</html>
