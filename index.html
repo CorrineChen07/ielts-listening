@@ -166,6 +166,17 @@ a.yg{font-size:13px;color:var(--focus);text-decoration:none;border:1px solid var
 .todo .tbar i{display:block;height:100%;background:var(--ok);width:0;transition:width .25s}
 @media (prefers-reduced-motion: reduce){.todo .tbar i{transition:none}}
 .todo .tnote{font-size:12px;color:var(--muted)}
+/* github sync */
+.gh .thead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.gh .ttl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);font-weight:700}
+.gh .est{font-size:13px;color:var(--muted)}
+.gh .est.ok{color:var(--ok)}
+.gh .est.bad{color:var(--bad)}
+.ghform{display:flex;flex-direction:column;gap:8px}
+.ghform input{font:inherit;font-family:var(--font-mono);font-size:14px;padding:8px 10px;border:1px solid var(--rule);border-radius:10px;background:var(--paper);color:var(--ink);min-width:0;width:100%}
+.ghform .row > *{flex:1 1 auto}
+.ghsteps{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:4px;line-height:1.5}
+.tnote{font-size:12px;color:var(--muted)}
 /* phrase list */
 .phrlist{border-top:1px solid var(--rule);padding-top:8px}
 .phrlist summary{font-size:14px;color:var(--muted)}
@@ -260,6 +271,22 @@ details summary{cursor:pointer;font-weight:700;padding:6px 0}
       <button type="button" data-sec="120" data-label="檢查答案">檢查 2:00（電腦）</button>
     </div>
     <label class="tswitch"><input type="checkbox" id="tRhythm" checked> 考試節奏：短文按播放先讀題 30 秒，錄音結束後自動倒數 30 秒檢查</label>
+  </div>
+  <div class="timer gh" id="ghcard" hidden>
+    <div class="thead"><span class="ttl">跨裝置同步（GitHub）</span><span class="est" id="ghStatus">未設定</span></div>
+    <div id="ghForm" class="ghform">
+      <div class="tnote">把紀錄存到你的 GitHub repo，手機和電腦就會共用同一份錯題本和今日進度。每台裝置貼一次 token。</div>
+      <input id="ghToken" type="password" placeholder="貼上 GitHub token（github_pat_…）" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="row"><button type="button" class="next" id="ghSave">儲存並同步</button><button type="button" class="ghost" id="ghHelp">怎麼拿 token？</button></div>
+      <ol id="ghHelpText" class="tnote ghsteps" hidden>
+        <li>GitHub 右上角頭像 → Settings → 左欄最下面 Developer settings → Personal access tokens → Fine-grained tokens → Generate new token。</li>
+        <li>Token name 填 ielts-sync；Expiration 選 1 year。</li>
+        <li>Repository access 選 Only select repositories，勾 ielts-listening。</li>
+        <li>Permissions → Repository permissions → Contents 改成 Read and write（其他不動）。</li>
+        <li>Generate token，複製那串 github_pat_… 貼到上面（只會顯示一次）。</li>
+      </ol>
+    </div>
+    <div id="ghOn" class="row" hidden><button type="button" class="ghost" id="ghNow">立即同步</button><button type="button" class="ghost" id="ghOff">解除這台裝置的同步</button></div>
   </div>
   </aside>
 
@@ -1621,7 +1648,9 @@ const WORD_BY_KEY = {}; ALL_WORDS.forEach(w=>{ if(!WORD_BY_KEY[w.key]) WORD_BY_K
 
 /* ---------- 狀態 ---------- */
 const S = { mode:'pass', bank:'p1', phrCat:'edu', accent:'random', curAccent:'en-GB', rate:0.95, round:null, audioUnlocked:false, ttsOk:null, recentPass:[] };
-const Store = { kind:'memory', db:null, words:{}, today:null, summary:{recent:[], total:0, correct:0}, dirtyWords:new Set(), dirtyMeta:false, timer:null, failed:false };
+const Store = { kind:'memory', db:null, words:{}, days:{}, today:null, summary:{recent:[], total:0, correct:0}, dirtyWords:new Set(), dirtyMeta:false, timer:null, failed:false };
+const recentOk = e => (typeof e==='number') ? e : ((e && e.ok) ? 1 : 0);
+function migrateRecent(s){ if (!s || !Array.isArray(s.recent)) return; const n=s.recent.length; s.recent = s.recent.map((e,i)=> (typeof e==='number') ? { t: Date.now()-(n-i)*1000, ok:e } : e); }
 const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
 const TODAY = todayStr();
 function newDay(){ return { date:TODAY, answered:0, correct:0, modes:{}, units:{}, manual:{} }; }
@@ -1939,7 +1968,7 @@ function renderHeader(){
   $('todayStat').textContent = t.correct+'／'+t.answered;
   const r = Store.summary.recent||[];
   if (r.length<20) $('bandStat').textContent = '近 40 題估分：再作答 '+(20-r.length)+' 題後顯示';
-  else { const c = r.reduce((a,b)=>a+b,0); const est = Math.round(c/r.length*40); $('bandStat').textContent = '近 '+r.length+' 題對 '+c+' → 估 Band '+bandOf(est); }
+  else { const c = r.reduce((a,b)=>a+recentOk(b),0); const est = Math.round(c/r.length*40); $('bandStat').textContent = '近 '+r.length+' 題對 '+c+' → 估 Band '+bandOf(est); }
   const n = Object.values(Store.words).filter(w=>w.wrong>0).length;
   $('errCount').textContent = n? '（'+n+' 個字）' : '';
   renderErrBook();
@@ -1988,7 +2017,7 @@ function renderErrBook(){
   const list = Object.values(Store.words).filter(w=>w.wrong>0).sort((a,b)=>(b.wrong-b.right)-(a.wrong-a.right)).slice(0,60);
   $('errList').innerHTML = list.map(w=>'<li><span><span class="en">'+esc(w.en)+'</span> <span class="zh">'+esc(w.zh)+'</span>'+ygLink(w.en)+'</span><span class="cnt">錯 '+w.wrong+'・對 '+w.right+'</span></li>').join('');
   $('errNote').textContent = list.length ? '錯過的字依「錯多於對」排序；答對幾次後會自然往後退。' : '錯過的單字會記在這裡；「錯題複習」模式會優先抽這些字。';
-  $('saveState').textContent = Store.kind==='db' ? '紀錄已同步到這個作品的資料庫，換裝置開也看得到。' : (Store.kind==='local' ? '紀錄只存在這個瀏覽器裡。' : (Store.failed ? '這次的紀錄無法儲存，關掉頁面就會消失。' : ''));
+  $('saveState').textContent = Store.kind==='db' ? '紀錄已同步到這個作品的資料庫，換裝置開也看得到。' : (Store.kind==='local' ? (GH.enabled ? '紀錄透過你的 GitHub 跨裝置同步。' : '紀錄只存在這個瀏覽器裡；右側可設定 GitHub 同步。') : (Store.failed ? '這次的紀錄無法儲存，關掉頁面就會消失。' : ''));
 }
 function renderBanks(){
   if (S.mode==='phr'){
@@ -2240,7 +2269,7 @@ function record(it, ok){
   t.answered++; if(ok) t.correct++;
   const m = t.modes[S.mode] || (t.modes[S.mode]={a:0,c:0}); m.a++; if(ok) m.c++;
   if (it.type==='num'){ const k = t.modes['num:'+it.kind] || (t.modes['num:'+it.kind]={a:0,c:0}); k.a++; if(ok) k.c++; }
-  const rec = Store.summary.recent || (Store.summary.recent=[]); rec.push(ok?1:0); while(rec.length>40) rec.shift();
+  const rec = Store.summary.recent || (Store.summary.recent=[]); rec.push({ t: Date.now(), ok: ok?1:0 }); while(rec.length>40) rec.shift();
   Store.summary.total=(Store.summary.total||0)+1; if(ok) Store.summary.correct=(Store.summary.correct||0)+1; Store.summary.updated=TODAY;
   if (it.type==='word' || it.type==='phr' || (it.type==='blank' && !/^\d/.test(it.forms[0]))){
     const en = it.type==='blank' ? it.forms[0] : it.en;
@@ -2252,7 +2281,7 @@ function record(it, ok){
   renderHeader();
   scheduleFlush();
 }
-function scheduleFlush(){ clearTimeout(Store.timer); Store.timer=setTimeout(flushNow, 1500); }
+function scheduleFlush(){ clearTimeout(Store.timer); Store.timer=setTimeout(flushNow, 1500); if (GH.enabled) ghSchedule(5000); }
 let flushing = Promise.resolve();
 function flushNow(){
   clearTimeout(Store.timer);
@@ -2268,12 +2297,14 @@ function flushNow(){
   return flushing;
 }
 function saveLocal(){
-  try{ localStorage.setItem('ielts-drill-v1', JSON.stringify({ words:Store.words, today:Store.today, summary:Store.summary })); if(Store.kind!=='db') Store.kind='local'; }
+  try{ if (Store.today) Store.days[TODAY]=Store.today; localStorage.setItem('ielts-drill-v1', JSON.stringify({ words:Store.words, days:Store.days, today:Store.today, summary:Store.summary })); if(Store.kind!=='db') Store.kind='local'; }
   catch(e){ if(Store.kind!=='db'){ Store.kind='memory'; Store.failed=true; } }
 }
 function loadLocal(){
   try{ const raw=localStorage.getItem('ielts-drill-v1'); if(!raw) return false; const d=JSON.parse(raw);
-    Store.words=d.words||{}; Store.summary=d.summary||Store.summary; Store.today = (d.today&&d.today.date===TODAY)? d.today : newDay(); Store.today.units=Store.today.units||{}; Store.today.manual=Store.today.manual||{}; Store.kind='local'; return true; }
+    Store.words=d.words||{}; Store.summary=d.summary||Store.summary; migrateRecent(Store.summary);
+    Store.days = d.days||{}; if (d.today && d.today.date && !Store.days[d.today.date]) Store.days[d.today.date]=d.today;
+    Store.today = Store.days[TODAY] || newDay(); Store.today.units=Store.today.units||{}; Store.today.manual=Store.today.manual||{}; Store.days[TODAY]=Store.today; Store.kind='local'; return true; }
   catch(e){ return false; }
 }
 async function initStore(){
@@ -2283,7 +2314,7 @@ async function initStore(){
     try{
       const snap = await db.collection('words').limit(1000).get();
       snap.docs.forEach(d=>{ const w=d.data(); if(w && w.key) Store.words[w.key]=Object.assign({}, w); });
-      const s = await db.doc('stats/summary').get(); if (s.exists) Store.summary = Object.assign({recent:[],total:0,correct:0}, s.data());
+      const s = await db.doc('stats/summary').get(); if (s.exists) Store.summary = Object.assign({recent:[],total:0,correct:0}, s.data()); migrateRecent(Store.summary);
       const pre = Store.today || newDay();
       const t = await db.doc('days/'+TODAY).get(); Store.today = t.exists ? Object.assign(newDay(), t.data()) : newDay();
       if (pre.answered>0 || Object.keys(pre.units||{}).length || Object.keys(pre.manual||{}).length){
@@ -2301,7 +2332,126 @@ async function initStore(){
   }
   if (!loadLocal()){ Store.kind = 'memory'; try{ localStorage.setItem('ielts-drill-probe','1'); localStorage.removeItem('ielts-drill-probe'); Store.kind='local'; }catch(e){ Store.failed=true; } }
   if (!Store.today) Store.today=newDay();
+  Store.days[TODAY]=Store.today;
   renderHeader();
+  ghInit();
+}
+
+/* ---------- GitHub 跨裝置同步（GitHub Pages／桌面版；claude.ai 版用自己的資料庫） ---------- */
+const GH = { owner:'CorrineChen07', repo:'ielts-listening', path:'progress.json', branch:'data', token:null, sha:null, base:null, busy:false, again:false, timer:null, last:null, err:null, enabled:false, conflicts:0 };
+function ghAvailable(){ return !window.claude; }
+function b64enc(str){ const bytes=new TextEncoder().encode(str); let bin=''; for (let i=0;i<bytes.length;i+=0x8000) bin+=String.fromCharCode.apply(null, bytes.subarray(i,i+0x8000)); return btoa(bin); }
+function b64dec(b64){ const bin=atob(b64.replace(/\s/g,'')); const bytes=new Uint8Array(bin.length); for (let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i); return new TextDecoder().decode(bytes); }
+function ghHeaders(){ return { 'Authorization':'Bearer '+GH.token, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28' }; }
+function ghUrl(){ return 'https://api.github.com/repos/'+GH.owner+'/'+GH.repo+'/contents/'+GH.path; }
+function ghLoadCfg(){
+  try{ GH.token = localStorage.getItem('ielts-gh-token')||null; const b=localStorage.getItem('ielts-gh-base'); GH.base = b ? JSON.parse(b) : null; GH.sha = localStorage.getItem('ielts-gh-sha')||null; const l=localStorage.getItem('ielts-gh-last'); GH.last = l ? +l : null; }catch(e){}
+  GH.enabled = ghAvailable() && !!GH.token;
+}
+function ghSaveCfg(){ try{ if (GH.token) localStorage.setItem('ielts-gh-token', GH.token); else localStorage.removeItem('ielts-gh-token'); localStorage.setItem('ielts-gh-base', JSON.stringify(GH.base||{})); if (GH.sha) localStorage.setItem('ielts-gh-sha', GH.sha); else localStorage.removeItem('ielts-gh-sha'); if (GH.last) localStorage.setItem('ielts-gh-last', String(GH.last)); }catch(e){} }
+function ghStatus(text, cls){
+  const el=$('ghStatus'); if (!el) return;
+  if (text){ el.textContent=text; el.className='est '+(cls||''); return; }
+  if (!GH.enabled){ el.textContent='未設定'; el.className='est'; return; }
+  if (GH.err){ el.textContent='同步失敗：'+GH.err; el.className='est bad'; return; }
+  if (GH.last){ const d=new Date(GH.last); el.textContent='已同步 '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); el.className='est ok'; }
+  else { el.textContent='已設定，尚未同步'; el.className='est'; }
+}
+function ghRenderUI(){
+  const card=$('ghcard'); if (!card) return;
+  card.hidden = !ghAvailable();
+  $('ghForm').hidden = GH.enabled; $('ghOn').hidden = !GH.enabled;
+  ghStatus(); renderErrBook();
+}
+function localState(){ if (Store.today) Store.days[TODAY]=Store.today; return { words:Store.words, days:Store.days, summary:Store.summary }; }
+const numv = v => (typeof v==='number' && isFinite(v)) ? v : 0;
+function mergeRecent(r, l, b){
+  const key = e => (typeof e==='number') ? null : String(e.t);
+  const seen=new Set(); const out=[];
+  const add = e => { if (!e) return; const k=key(e); if (k===null) return; if (seen.has(k)) return; seen.add(k); out.push(e); };
+  (r||[]).forEach(add); (l||[]).forEach(add);
+  out.sort((a,b)=>a.t-b.t);
+  return out.slice(-40);
+}
+function ghMerge(R, L, B){
+  R=R||{}; L=L||{}; B=B||{};
+  const M = { v:1, words:{}, days:{}, summary:{}, updatedAt:new Date().toISOString() };
+  const ks = new Set([...Object.keys(R.words||{}), ...Object.keys(L.words||{})]);
+  ks.forEach(k=>{
+    const r=(R.words||{})[k]||{}, l=(L.words||{})[k]||{}, b=(B.words||{})[k]||{};
+    const w = Object.assign({}, r, l);
+    w.wrong = Math.max(0, numv(r.wrong)+numv(l.wrong)-numv(b.wrong));
+    w.right = Math.max(0, numv(r.right)+numv(l.right)-numv(b.right));
+    const last=[r.last,l.last].filter(Boolean).sort().pop(); if (last) w.last=last;
+    if (w.wrong===0 && w.right===0) return;
+    M.words[k]=w;
+  });
+  const ds = new Set([...Object.keys(R.days||{}), ...Object.keys(L.days||{})]);
+  ds.forEach(d=>{
+    const r=(R.days||{})[d]||{}, l=(L.days||{})[d]||{}, b=(B.days||{})[d]||{};
+    const day = { date:d, answered:Math.max(0,numv(r.answered)+numv(l.answered)-numv(b.answered)), correct:Math.max(0,numv(r.correct)+numv(l.correct)-numv(b.correct)), modes:{}, units:{}, manual:{} };
+    new Set([...Object.keys(r.modes||{}), ...Object.keys(l.modes||{})]).forEach(k=>{ const rm=(r.modes||{})[k]||{}, lm=(l.modes||{})[k]||{}, bm=(b.modes||{})[k]||{}; day.modes[k]={ a:Math.max(0,numv(rm.a)+numv(lm.a)-numv(bm.a)), c:Math.max(0,numv(rm.c)+numv(lm.c)-numv(bm.c)) }; });
+    new Set([...Object.keys(r.units||{}), ...Object.keys(l.units||{})]).forEach(k=>{ day.units[k]=Math.max(0, numv((r.units||{})[k])+numv((l.units||{})[k])-numv((b.units||{})[k])); });
+    new Set([...Object.keys(r.manual||{}), ...Object.keys(l.manual||{})]).forEach(k=>{ day.manual[k]=Math.max(numv((r.manual||{})[k]), numv((l.manual||{})[k])); });
+    M.days[d]=day;
+  });
+  const rs=R.summary||{}, ls=L.summary||{}, bs=B.summary||{};
+  M.summary = { total:Math.max(0,numv(rs.total)+numv(ls.total)-numv(bs.total)), correct:Math.max(0,numv(rs.correct)+numv(ls.correct)-numv(bs.correct)), recent:mergeRecent(rs.recent, ls.recent, bs.recent) };
+  const upd=[rs.updated, ls.updated].filter(Boolean).sort().pop(); if (upd) M.summary.updated=upd;
+  return M;
+}
+function applyMerged(M){
+  Store.words = M.words; Store.days = M.days; Store.summary = M.summary;
+  Store.today = Store.days[TODAY] || newDay(); Store.today.units=Store.today.units||{}; Store.today.manual=Store.today.manual||{}; Store.days[TODAY]=Store.today;
+  saveLocal(); renderHeader();
+}
+function ghHasDelta(){ try{ return JSON.stringify(localState()) !== JSON.stringify({ words:(GH.base||{}).words||{}, days:(GH.base||{}).days||{}, summary:(GH.base||{}).summary||{} }); }catch(e){ return true; } }
+function ghSchedule(ms){ if (!GH.enabled) return; clearTimeout(GH.timer); GH.timer=setTimeout(()=>ghSync(), ms); }
+async function ghSync(opts){
+  if (!GH.enabled) return;
+  if (GH.busy){ GH.again=true; return; }
+  GH.busy=true; ghStatus('同步中…');
+  try{
+    let R=null;
+    const res = await fetch(ghUrl()+'?ref='+GH.branch+'&t='+Date.now(), { headers: ghHeaders(), cache:'no-store' });
+    if (res.status===200){ const j=await res.json(); GH.sha=j.sha; try{ R=JSON.parse(b64dec(j.content)); }catch(e){ R=null; } }
+    else if (res.status===404){ GH.sha=null; R=null; }
+    else if (res.status===401) throw new Error('token 無效或已過期');
+    else if (res.status===403) throw new Error('GitHub 拒絕存取（權限不足或次數上限）');
+    else throw new Error('GitHub 回應 '+res.status);
+    const hadDelta = ghHasDelta() || !GH.base;
+    const M = ghMerge(R, localState(), GH.base);
+    applyMerged(M);
+    const body = JSON.stringify(M);
+    if (!R || hadDelta || (opts && opts.force)){
+      const put = await fetch(ghUrl(), { method:'PUT', headers:Object.assign({ 'Content-Type':'application/json' }, ghHeaders()), body: JSON.stringify({ message:'progress '+new Date().toISOString(), content:b64enc(body), sha:GH.sha||undefined, branch:GH.branch }), keepalive: body.length<50000 });
+      if (put.status===200 || put.status===201){ const j=await put.json(); GH.sha=j.content && j.content.sha || GH.sha; }
+      else if (put.status===409 || put.status===422){
+        GH.conflicts++; GH.busy=false;
+        if (GH.conflicts<3) return ghSync();
+        throw new Error('兩台裝置同時寫入，稍後再試');
+      }
+      else if (put.status===401) throw new Error('token 無效或已過期');
+      else if (put.status===403) throw new Error('token 沒有寫入權限（Contents 要選 Read and write）');
+      else if (put.status===404) throw new Error('找不到 repo 或分支（token 是否勾了 ielts-listening？）');
+      else throw new Error('上傳失敗 '+put.status);
+    }
+    GH.conflicts=0; GH.base=JSON.parse(body); GH.last=Date.now(); GH.err=null; ghSaveCfg(); ghStatus(); renderErrBook();
+  }catch(e){ GH.err = (e && e.message) ? e.message : String(e); if (/Failed to fetch|NetworkError|Load failed/i.test(GH.err)) GH.err='沒有網路或被瀏覽器擋下'; ghStatus(); }
+  finally{ GH.busy=false; if (GH.again){ GH.again=false; ghSchedule(3000); } }
+}
+function ghInit(){
+  ghLoadCfg(); ghRenderUI();
+  if (GH.enabled) ghSync();
+  $('ghSave').addEventListener('click', ()=>{
+    const t = ($('ghToken').value||'').trim(); if (!t){ ghStatus('請先貼上 token','bad'); return; }
+    GH.token=t; GH.base=null; GH.sha=null; GH.err=null; GH.enabled=ghAvailable(); ghSaveCfg(); $('ghToken').value=''; ghRenderUI(); ghSync();
+  });
+  $('ghHelp').addEventListener('click', ()=>{ $('ghHelpText').hidden = !$('ghHelpText').hidden; });
+  $('ghNow').addEventListener('click', ()=>ghSync({force:true}));
+  $('ghOff').addEventListener('click', ()=>{ GH.token=null; GH.enabled=false; GH.base=null; GH.sha=null; GH.err=null; GH.last=null; try{ localStorage.removeItem('ielts-gh-token'); localStorage.removeItem('ielts-gh-base'); localStorage.removeItem('ielts-gh-sha'); localStorage.removeItem('ielts-gh-last'); }catch(e){} ghRenderUI(); });
+  document.addEventListener('visibilitychange', ()=>{ if (!GH.enabled) return; if (document.visibilityState==='hidden'){ if (ghHasDelta()) ghSync(); } else ghSchedule(800); });
+  setInterval(()=>{ if (GH.enabled && ghHasDelta()) ghSync(); }, 120000);
 }
 
 /* ---------- YouGlish 真人語速（只在桌面下載版能用：claude.ai 頁面不允許嵌入 YouTube） ---------- */
