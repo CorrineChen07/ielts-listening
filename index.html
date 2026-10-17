@@ -140,11 +140,32 @@ a.yg{font-size:13px;color:var(--focus);text-decoration:none;border:1px solid var
 .tpresets button{font-size:13px}
 .tswitch{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
 .tswitch input{margin-top:2px}
+.side{display:flex;flex-direction:column;gap:12px}
 @media (min-width: 900px){
-  .wrap{max-width:880px;display:grid;grid-template-columns:560px minmax(240px,1fr);column-gap:20px;align-items:start}
+  .wrap{max-width:900px;display:grid;grid-template-columns:560px minmax(260px,1fr);column-gap:20px;align-items:start}
   .wrap > *{grid-column:1}
-  .wrap > .timer{grid-column:2;grid-row:1 / span 40;position:sticky;top:12px}
+  .wrap > .side{grid-column:2;grid-row:1 / span 40;position:sticky;top:12px}
 }
+/* today's goals */
+.todo{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.todo .thead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.todo .ttl{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mark);font-weight:700}
+.todo .est{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.todo .est b{color:var(--ink)}
+.todo ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.todo li{display:flex;align-items:center;gap:8px;font-size:14px;padding:5px 6px;border-radius:8px;cursor:pointer;min-width:0}
+.todo li:hover,.todo li:focus-visible{background:var(--paper)}
+.todo li .ck{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--rule);display:inline-flex;align-items:center;justify-content:center;font-size:12px;flex:none;color:var(--mark-ink)}
+.todo li.done .ck{background:var(--ok);border-color:var(--ok);color:#fff}
+.todo li.done .nm{color:var(--muted);text-decoration:line-through}
+.todo li .nm{flex:1;min-width:0}
+.todo li .nm .tnote{display:block}
+.todo li .pg{font-family:var(--font-mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.todo li .mn{font-size:12px;color:var(--muted);min-width:3.5ch;text-align:right;white-space:nowrap}
+.todo .tbar{height:6px;border-radius:999px;background:var(--rule);overflow:hidden}
+.todo .tbar i{display:block;height:100%;background:var(--ok);width:0;transition:width .25s}
+@media (prefers-reduced-motion: reduce){.todo .tbar i{transition:none}}
+.todo .tnote{font-size:12px;color:var(--muted)}
 /* phrase list */
 .phrlist{border-top:1px solid var(--rule);padding-top:8px}
 .phrlist summary{font-size:14px;color:var(--muted)}
@@ -218,7 +239,14 @@ details summary{cursor:pointer;font-weight:700;padding:6px 0}
     </div>
   </header>
 
-  <aside class="timer" id="timer" aria-label="計時器">
+  <aside class="side" id="side">
+  <div class="todo" id="todo" aria-label="今日目標">
+    <div class="thead"><span class="ttl" id="todoLabel">今日目標</span><span class="est" id="todoEst"></span></div>
+    <div class="tbar"><i id="todoBar"></i></div>
+    <ul id="todoList"></ul>
+    <div class="tnote">點項目可直接開始；真題與模考是手動打勾。時間是估計值，依每項的平均用時計算。</div>
+  </div>
+  <div class="timer" id="timer" aria-label="計時器">
     <div class="trow">
       <div class="tclock"><span class="tlabel" id="tLabel">讀題</span><span class="ttime" id="tTime">0:30</span></div>
       <div class="tbtns"><button type="button" id="tStart">開始</button><button type="button" class="ghost" id="tReset">重設</button></div>
@@ -232,10 +260,12 @@ details summary{cursor:pointer;font-weight:700;padding:6px 0}
       <button type="button" data-sec="120" data-label="檢查答案">檢查 2:00（電腦）</button>
     </div>
     <label class="tswitch"><input type="checkbox" id="tRhythm" checked> 考試節奏：短文按播放先讀題 30 秒，錄音結束後自動倒數 30 秒檢查</label>
+  </div>
   </aside>
 
   <nav class="modes" role="tablist" aria-label="測驗模式" id="modes">
     <button role="tab" data-mode="pass" aria-selected="true">短文填空</button>
+    <button role="tab" data-mode="dict" aria-selected="false">單字聽寫</button>
     <button role="tab" data-mode="yg" aria-selected="false" id="ygTab" hidden>YouGlish 單字</button>
     <button role="tab" data-mode="phr" aria-selected="false">寫作短語</button>
     <button role="tab" data-mode="syn" aria-selected="false">同義替換</button>
@@ -1277,7 +1307,12 @@ const S = { mode:'pass', bank:'p1', phrCat:'edu', accent:'random', curAccent:'en
 const Store = { kind:'memory', db:null, words:{}, today:null, summary:{recent:[], total:0, correct:0}, dirtyWords:new Set(), dirtyMeta:false, timer:null, failed:false };
 const todayStr = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
 const TODAY = todayStr();
-function newDay(){ return { date:TODAY, answered:0, correct:0, modes:{} }; }
+function newDay(){ return { date:TODAY, answered:0, correct:0, modes:{}, units:{}, manual:{} }; }
+function bumpUnit(k, n){
+  const t = Store.today || (Store.today = newDay());
+  const u = t.units || (t.units = {}); u[k] = (u[k]||0) + (n||1);
+  Store.dirtyMeta = true; scheduleFlush(); renderTodo();
+}
 
 /* ---------- 工具 ---------- */
 const rnd = n => Math.floor(Math.random()*n);
@@ -1576,7 +1611,7 @@ function ttsUnavailable(){
 const el = { prompt:$('prompt'), sub:$('sub'), play:$('play'), playLabel:$('playLabel'), hintRow:$('hintRow'), hint:$('hint'), form:$('form'), ans:$('ans'), options:$('options'), fb:$('fb'), next:$('next'), notice:$('notice'), qnum:$('qnum'), qkind:$('qkind'), summary:$('summary'), passage:$('passage'), ygbox:$('ygbox') };
 function showNotice(msg){ el.notice.textContent=msg; el.notice.classList.remove('hidden'); }
 function hideNotice(){ el.notice.classList.add('hidden'); }
-function isTTSMode(){ return S.mode==='pass' || S.mode==='num' || S.mode==='review'; }
+function isTTSMode(){ return S.mode==='pass' || S.mode==='num' || S.mode==='review' || S.mode==='dict'; }
 function ygAvailable(){ return !window.claude; }
 
 function renderHeader(){
@@ -1591,6 +1626,46 @@ function renderHeader(){
   const n = Object.values(Store.words).filter(w=>w.wrong>0).length;
   $('errCount').textContent = n? '（'+n+' 個字）' : '';
   renderErrBook();
+  renderTodo();
+}
+
+/* ---------- 今日目標（依四週計畫） ---------- */
+const PLAN_UNIT = { pass:12, dict:5, num:5, syn:5, yg:1, phr:6, review:5, cam:25, mock:40 };
+const PLAN_NAME = { pass:'短文填空', dict:'單字聽寫', num:'數字與拼名', syn:'同義替換', yg:'YouGlish 單字', phr:'寫作短語', review:'錯題複習', cam:'劍橋真題一個 Part', mock:'整回模考（計時）' };
+const PLAN_UNITNAME = { pass:'篇', dict:'回', num:'回', syn:'回', yg:'句', phr:'回', review:'回', cam:'個', mock:'回' };
+function planFor(dateStr){
+  const day = s => new Date(s+'T00:00:00');
+  const d = day(dateStr); const dow = d.getDay(); const wk = (dow===0 || dow===6);
+  const items = []; const add = (k,n,extra)=>{ if (n>0) items.push(Object.assign({k, n}, extra||{})); };
+  let label;
+  if (d < day('2026-10-31')){ label='第 1–2 週 · 第一輪'; add('pass',2); add('dict',4); add('num',1); add('syn',1); add('yg',10); add('phr',1); add('cam',1); if (wk) add('mock',1); }
+  else if (d < day('2026-11-07')){ label='第 3 週 · 第二輪'; add('pass',3,{note:'重做：口音隨機、語速快、考試節奏開'}); add('review',2); add('yg',10,{note:'抽錯題本的字'}); add('dict',1,{bank:'spell', name:'高頻拼錯字聽寫'}); add('phr',1); add('cam',1); if (wk) add('mock',2); }
+  else if (d < day('2026-11-14')){ label='第 4 週 · 錯題＋模考'; add('review',2); add('pass',2,{note:'挑錯最多的篇'}); add('num',1); add('phr',1); const idx=Math.round((d-day('2026-11-07'))/86400000); if (idx%2===0 || wk) add('mock',1); }
+  else if (d < day('2026-11-17')){ label='考前 · 只聽寫不做新題'; add('dict',3,{bank:'spell', name:'高頻拼錯字聽寫'}); add('num',1); add('phr',1); }
+  else if (d < day('2026-11-30')){ label='11/29 前 · 維持手感'; add('pass',1); add('review',1); add('phr',2); add('num',1); }
+  else { label='自由練習'; add('pass',1); add('review',1); add('phr',1); }
+  return { label, items };
+}
+function renderTodo(){
+  const t = Store.today || newDay(); const u = t.units||{}; const m = t.manual||{};
+  const plan = planFor(TODAY);
+  let remain = 0, total = 0;
+  const rows = plan.items.map(it=>{
+    const manual = (it.k==='cam' || it.k==='mock');
+    const done = manual ? (m[it.k]||0) : (u[it.k]||0);
+    const left = Math.max(0, it.n - done); const mins = left * PLAN_UNIT[it.k];
+    remain += mins; total += it.n * PLAN_UNIT[it.k];
+    const name = it.name || PLAN_NAME[it.k];
+    return '<li class="'+(left===0?'done':'')+'" data-k="'+it.k+'"'+(it.bank?' data-bank="'+it.bank+'"':'')+' data-manual="'+(manual?1:0)+'" role="button" tabindex="0" aria-label="'+esc(name)+'">'
+      + '<span class="ck">'+(left===0?'✓':'')+'</span><span class="nm">'+esc(name)+(it.note?'<span class="tnote">'+esc(it.note)+'</span>':'')+'</span>'
+      + '<span class="pg">'+Math.min(done,it.n)+'／'+it.n+' '+PLAN_UNITNAME[it.k]+'</span><span class="mn">'+(left?mins+' 分':'')+'</span></li>';
+  });
+  const fin = new Date(Date.now() + remain*60000);
+  const finStr = String(fin.getHours()).padStart(2,'0')+':'+String(fin.getMinutes()).padStart(2,'0');
+  $('todoLabel').textContent = '今日目標 · '+plan.label;
+  $('todoEst').innerHTML = remain>0 ? '剩 <b>'+remain+' 分鐘</b> · 現在開始約 <b>'+finStr+'</b> 完成' : '<b>今日目標達成</b>';
+  $('todoList').innerHTML = rows.join('');
+  $('todoBar').style.width = (total ? Math.round((total-remain)/total*100) : 100)+'%';
 }
 function renderErrBook(){
   const list = Object.values(Store.words).filter(w=>w.wrong>0).sort((a,b)=>(b.wrong-b.right)-(a.wrong-a.right)).slice(0,60);
@@ -1613,7 +1688,7 @@ function setMode(m){
   if (S.mode==='yg' && m!=='yg') ygPause();
   S.mode = m;
   document.querySelectorAll('#modes button').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.mode===m)));
-  $('bankRow').classList.toggle('hidden', !(m==='pass'||m==='yg'||m==='phr'));
+  $('bankRow').classList.toggle('hidden', !(m==='pass'||m==='yg'||m==='phr'||m==='dict'));
   $('voiceRow').classList.toggle('hidden', m==='yg');
   $('phrList').classList.toggle('hidden', m!=='phr');
   if (m==='phr') renderPhrList();
@@ -1771,6 +1846,7 @@ function submitPassage(){
   el.fb.classList.remove('hidden');
   el.next.textContent = '下一篇'; el.next.classList.remove('hidden');
   el.fb.scrollIntoView({behavior:'smooth', block:'start'});
+  bumpUnit('pass');
   // 真人語速複習：答錯的字優先，全對就用本篇的字
   const words = []; const seen = new Set();
   const addW = (forms,i,wrong)=>{ if (/^\d/.test(forms[0]) || seen.has(forms[0])) return; seen.add(forms[0]); words.push({ en:forms[0], forms, zh:(p.zh&&p.zh[i])||'', key:keyOf(forms[0]), bank:p.part, wrong }); };
@@ -1837,6 +1913,7 @@ function finishRound(){
   $('redo').classList.toggle('hidden', !r.wrong.some(w=>w.it.type==='word'||w.it.type==='phr'));
   el.summary.classList.remove('hidden'); el.summary.scrollIntoView({behavior:'smooth', block:'start'});
   el.next.classList.add('hidden');
+  if (r.items.length >= 5) bumpUnit(S.mode);
   flushNow();
 }
 
@@ -1879,7 +1956,7 @@ function saveLocal(){
 }
 function loadLocal(){
   try{ const raw=localStorage.getItem('ielts-drill-v1'); if(!raw) return false; const d=JSON.parse(raw);
-    Store.words=d.words||{}; Store.summary=d.summary||Store.summary; Store.today = (d.today&&d.today.date===TODAY)? d.today : newDay(); Store.kind='local'; return true; }
+    Store.words=d.words||{}; Store.summary=d.summary||Store.summary; Store.today = (d.today&&d.today.date===TODAY)? d.today : newDay(); Store.today.units=Store.today.units||{}; Store.today.manual=Store.today.manual||{}; Store.kind='local'; return true; }
   catch(e){ return false; }
 }
 async function initStore(){
@@ -1892,7 +1969,14 @@ async function initStore(){
       const s = await db.doc('stats/summary').get(); if (s.exists) Store.summary = Object.assign({recent:[],total:0,correct:0}, s.data());
       const pre = Store.today || newDay();
       const t = await db.doc('days/'+TODAY).get(); Store.today = t.exists ? Object.assign(newDay(), t.data()) : newDay();
-      if (pre.answered>0){ Store.today.answered+=pre.answered; Store.today.correct+=pre.correct; for (const k in pre.modes){ const m=Store.today.modes[k]||(Store.today.modes[k]={a:0,c:0}); m.a+=pre.modes[k].a; m.c+=pre.modes[k].c; } Store.dirtyMeta=true; }
+      if (pre.answered>0 || Object.keys(pre.units||{}).length || Object.keys(pre.manual||{}).length){
+        Store.today.answered+=pre.answered; Store.today.correct+=pre.correct;
+        for (const k in pre.modes){ const m=Store.today.modes[k]||(Store.today.modes[k]={a:0,c:0}); m.a+=pre.modes[k].a; m.c+=pre.modes[k].c; }
+        Store.today.units = Store.today.units||{}; for (const k in (pre.units||{})) Store.today.units[k]=(Store.today.units[k]||0)+pre.units[k];
+        Store.today.manual = Store.today.manual||{}; for (const k in (pre.manual||{})) Store.today.manual[k]=Math.max(Store.today.manual[k]||0, pre.manual[k]);
+        Store.dirtyMeta=true;
+      }
+      Store.today.units = Store.today.units||{}; Store.today.manual = Store.today.manual||{};
       Store.db=db; Store.kind='db';
       if (Store.dirtyMeta || Store.dirtyWords.size) scheduleFlush();
       renderHeader(); return;
@@ -2026,7 +2110,7 @@ function ygSubmit(){
     rows.push('<li class="'+(ok?'ok':'bad')+'"><span class="n">'+(k+1)+'</span><span class="en">'+(ok?'✓ ':'✗ ')+esc(w.en)+'</span>'+(!ok&&w.raw?'<span class="yours">'+esc(w.raw)+'</span>':'')+'<span class="zh">'+esc(w.zh)+'</span>'+ygLink(w.en)+'</li>');
   });
   r.correct=correct;
-  if (S.mode==='yg'){ YGSESS.n += r.words.length; YGSESS.c += correct; }
+  if (S.mode==='yg'){ YGSESS.n += r.words.length; YGSESS.c += correct; bumpUnit('yg', r.words.length); }
   ygProgress();
   const fb=$('ygfb'); fb.className='fb '+(correct>=Math.ceil(r.words.length*0.65)?'ok':'bad');
   fb.innerHTML = '<div class="verdict">'+(r.words.length===1 ? (correct?'✓ 正確':'✗ 錯了') : '真人語速 '+correct+'／'+r.words.length)+'</div><ol class="blanks">'+rows.join('')+'</ol>';
@@ -2106,6 +2190,21 @@ $('again').addEventListener('click', ()=>{ startRound(); $('card').scrollIntoVie
 $('redo').addEventListener('click', ()=>{ const items = S.round.wrong.filter(w=>w.it.type==='word'||w.it.type==='phr').map(w=>w.it); if(!items.length) return; startRound(items); $('card').scrollIntoView({behavior:'smooth', block:'start'}); });
 document.addEventListener('keydown', e=>{ const a=document.activeElement; if (e.key==='Enter' && S.mode!=='pass' && S.mode!=='yg' && S.round && S.round.answered && (a===document.body || a===el.ans)){ e.preventDefault(); next(); } });
 document.addEventListener('visibilitychange', ()=>{ if (document.visibilityState==='hidden') flushNow(); });
+function todoAct(li){
+  const k = li.dataset.k;
+  if (li.dataset.manual==='1'){
+    const t = Store.today || (Store.today=newDay()); const m = t.manual || (t.manual={});
+    const target = (planFor(TODAY).items.find(x=>x.k===k)||{n:1}).n;
+    m[k] = ((m[k]||0) + 1) % (target+1);
+    Store.dirtyMeta=true; scheduleFlush(); renderTodo(); return;
+  }
+  if (li.dataset.bank) S.bank = li.dataset.bank;
+  setMode(k);
+  $('card').scrollIntoView({behavior:'smooth', block:'start'});
+}
+$('todoList').addEventListener('click', e=>{ const li=e.target.closest('li[data-k]'); if (li) todoAct(li); });
+$('todoList').addEventListener('keydown', e=>{ const li=e.target.closest && e.target.closest('li[data-k]'); if (li && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); todoAct(li); } });
+setInterval(renderTodo, 60000);
 
 /* ---------- 啟動 ---------- */
 Store.today = newDay();
